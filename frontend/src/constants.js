@@ -16,9 +16,10 @@ export const DEFAULT_CONFIG = {
 };
 
 export const FAIRNESS_BADGES = [
-  "MIT License",
-  "AI: GPT-4o mini",
-  "Open Innovation: Unbiased AI Decision",
+  "Structural Integrity",
+  "Zero Entropy Calibration",
+  "Open Source",
+  "LLM Optimized",
 ];
 
 export const TABS = [

@@ -23,7 +23,7 @@ class CustomFilter(BaseModel):
     targetMinRepresentationPct: float = Field(default=0, ge=0, le=100)
 
 
-class de.biasConfig(BaseModel):
+class DeBiasConfig(BaseModel):
     datasetSize: int = Field(default=500, ge=100, le=10000)
     representation: RepresentationConfig = Field(default_factory=RepresentationConfig)
     historicalCorrection: float = Field(default=80, ge=0, le=100)
@@ -63,12 +63,12 @@ class SchemaColumn(BaseModel):
 
 class GenerateRequest(BaseModel):
     schema: list[SchemaColumn] = Field(default_factory=list)
-    config: de.biasConfig = Field(default_factory=de.biasConfig)
+    config: DeBiasConfig = Field(default_factory=DeBiasConfig)
 
 
 class PromptRequest(BaseModel):
     instruction: str = Field(min_length=1)
-    currentConfig: de.biasConfig = Field(default_factory=de.biasConfig)
+    currentConfig: DeBiasConfig = Field(default_factory=DeBiasConfig)
 
 
 class SuggestColumnsRequest(BaseModel):

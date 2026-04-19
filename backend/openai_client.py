@@ -6,7 +6,7 @@ from typing import Any
 
 from openai import OpenAI
 
-from schemas import de.biasConfig
+from schemas import DeBiasConfig
 
 
 SYSTEM_PROMPT = """You are a fairness constraint interpreter for de.bias, a synthetic
@@ -100,7 +100,7 @@ def test_connection() -> tuple[bool, str]:
         return False, str(exc)
 
 
-def interpret_fairness_prompt(instruction: str, current_config: de.biasConfig) -> dict[str, Any]:
+def interpret_fairness_prompt(instruction: str, current_config: DeBiasConfig) -> dict[str, Any]:
     client = _client()
     response = client.chat.completions.create(
         model="gpt-4o-mini",

@@ -1,5 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { ArrowRight, Check, CircleHelp, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import AIPromptBox from "./components/AIPromptBox";
 import ConfigPanel from "./components/ConfigPanel";
 import DataTable from "./components/DataTable";
@@ -7,6 +9,12 @@ import DistributionCharts from "./components/DistributionCharts";
 import DownloadPanel from "./components/DownloadPanel";
 import FairnessReport from "./components/FairnessReport";
 import SchemaBuilder from "./components/SchemaBuilder";
+import ScoreHero from "./components/ScoreHero";
+import Layout from "./components/Layout";
+import PretextHero from "./components/PretextHero";
+import Footer from "./components/Footer";
+import { MotionWrapper, StaggerWrapper } from "./components/MotionWrapper";
+
 import { generateDataset } from "./api/generate";
 import { applyAIConstraint, suggestColumns, testApiConnection } from "./api/openai";
 import { DEFAULT_CONFIG, DEFAULT_SCHEMA, DEMO_SCHEMA, FAIRNESS_BADGES, TABS, buildSchemaColumn } from "./constants";
@@ -48,24 +56,24 @@ function fairnessTone(score) {
   if (score >= 80) {
     return {
       label: "Strong",
-      chipClassName: "text-emerald-200 border-emerald-500/30 bg-emerald-500/10",
-      accentClassName: "from-emerald-400 via-emerald-300 to-lime-300",
-      message: "You are in a strong range. Keep pushing toward a consistently fair dataset.",
+      chipClassName: "text-emerald-700 border-emerald-200 bg-emerald-50",
+      accentClassName: "from-emerald-500 via-teal-400 to-cyan-400",
+      message: "Strong structural integrity. Your dataset maintains fairness across protected groups.",
     };
   }
   if (score >= 60) {
     return {
       label: "Improving",
-      chipClassName: "text-amber-100 border-amber-500/30 bg-amber-500/10",
-      accentClassName: "from-amber-400 via-amber-300 to-yellow-300",
-      message: "You are partway there. A few adjustments can still reduce approval gaps.",
+      chipClassName: "text-amber-700 border-amber-200 bg-amber-50",
+      accentClassName: "from-amber-400 via-orange-300 to-yellow-300",
+      message: "The structure is emerging. Some demographic gaps still require calibration.",
     };
   }
   return {
-    label: "Needs attention",
-    chipClassName: "text-rose-100 border-rose-500/30 bg-rose-500/10",
-    accentClassName: "from-rose-400 via-orange-300 to-amber-300",
-    message: "There is visible bias left in the dataset. Use the controls below to raise this score.",
+    label: "Critical",
+    chipClassName: "text-rose-700 border-rose-200 bg-rose-50",
+    accentClassName: "from-rose-400 via-orange-400 to-amber-400",
+    message: "High entropy detected. Protected groups are facing significant disparate outcomes.",
   };
 }
 
@@ -407,276 +415,207 @@ export default function App() {
         : "Generate dataset";
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_30%),linear-gradient(180deg,_#020617,_#0f172a_45%,_#020617)] text-slate-100">
-      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-300">de.bias</p>
-              <p className="mt-1 truncate text-sm text-slate-300">Schema Builder → Configuration → Generate → Preview + Report</p>
-            </div>
-            {result ? (
-              <button
-                className={`hidden rounded-full border px-3 py-1 text-xs font-medium md:inline-flex ${scoreTone.chipClassName}`}
-                onClick={() => setActiveTab("report")}
+    <Layout>
+      <div className="mx-auto max-w-7xl px-6 pb-24">
+        <PretextHero />
+
+        <div className="mt-8">
+          <AnimatePresence mode="wait">
+            {step === "schema" ? (
+              <motion.div
+                key="schema-step"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.4 }}
               >
-                Score {score}
-              </button>
-            ) : null}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-            <button
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:border-slate-600 hover:bg-slate-800"
-              onClick={() => setShowHelpModal(true)}
-            >
-              <CircleHelp size={16} />
-              How it works?
-            </button>
-            <button
-              className="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:border-slate-600 hover:bg-slate-800"
-              onClick={handleDemoScenario}
-            >
-              Load Demo Scenario
-            </button>
-            {step === "config" ? (
-              <button
-                className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={() => handleGenerate(config, schema)}
-                disabled={loading}
+                <SchemaBuilder
+                  schema={schema}
+                  suggestions={schemaSuggestions}
+                  suggestionLoading={suggestionLoading}
+                  validationError={schemaValidationError}
+                  agePromptPending={agePromptPending}
+                  onTogglePreset={handleTogglePreset}
+                  onUpdateColumn={handleUpdateSchemaColumn}
+                  onRemoveColumn={handleRemoveSchemaColumn}
+                  onReorder={(fromIndex, toIndex) => setSchema((current) => reorderSchema(current, fromIndex, toIndex))}
+                  onSuggest={handleSuggestColumns}
+                  onAddSuggestion={handleAddSuggestion}
+                  onAddAllSuggestions={handleAddAllSuggestions}
+                  onDismissSuggestions={() => setSchemaSuggestions([])}
+                  onProceed={() => proceedToConfig(schema)}
+                  onEnableAgeMonitoring={handleEnableAgeMonitoring}
+                  onSkipAgeMonitoring={handleSkipAgeMonitoring}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="config-step"
+                initial={{ opacity: 0, scale: 1.02 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.4 }}
+                className="grid gap-12 xl:grid-cols-[380px_minmax(0,1fr)]"
               >
-                {showGenerateSuccess ? <Check size={16} /> : <Sparkles size={16} />}
-                {generateButtonLabel}
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-7xl px-4 pb-2 pt-6">
-        <div className="max-w-4xl">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Build the exact credit dataset schema you need, then stress-test it for bias.
-          </h1>
-          <p className="mt-2 max-w-3xl text-sm text-slate-300">
-            Choose your own columns, monitor protected attributes, and let de.bias generate a synthetic dataset with fairness metrics that adapt to your schema.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {FAIRNESS_BADGES.map((badge) => (
-              <span key={badge} className="rounded-full border border-slate-700 bg-slate-900/90 px-3 py-1 text-xs text-slate-300">
-                {badge}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {step === "config" ? (
-          <button
-            className="mt-6 grid w-full gap-4 rounded-[2rem] border border-slate-800 bg-[linear-gradient(135deg,_rgba(15,23,42,0.95),_rgba(15,23,42,0.88)),radial-gradient(circle_at_right,_rgba(96,165,250,0.28),_transparent_35%)] p-5 text-left shadow-2xl shadow-slate-950/20 transition hover:border-slate-700"
-            onClick={() => setActiveTab("report")}
-          >
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-3xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-200/90">Your current score</p>
-                <div className="mt-3 flex flex-wrap items-end gap-4">
-                  <div className="text-5xl font-semibold tracking-tight sm:text-6xl">{score}</div>
-                  <div className={`mb-2 rounded-full border px-3 py-1 text-sm font-medium ${scoreTone.chipClassName}`}>{scoreTone.label}</div>
-                </div>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">{scoreTone.message}</p>
-              </div>
-
-              <div className="min-w-[240px] max-w-sm">
-                <div className="mb-2 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.25em] text-slate-400">
-                  <span>Improve toward 100</span>
-                  <span className="shrink-0">{Math.min(score, 100)} / 100</span>
-                </div>
-                <div className="h-3 rounded-full bg-slate-800">
-                  <div className={`h-full rounded-full bg-gradient-to-r ${scoreTone.accentClassName}`} style={{ width: `${Math.min(score, 100)}%` }} />
-                </div>
-                <div className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-blue-200">
-                  Open Fairness Report
-                  <ArrowRight size={16} />
-                </div>
-              </div>
-            </div>
-          </button>
-        ) : null}
-      </section>
-
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        {step === "schema" ? (
-          <SchemaBuilder
-            schema={schema}
-            suggestions={schemaSuggestions}
-            suggestionLoading={suggestionLoading}
-            validationError={schemaValidationError}
-            agePromptPending={agePromptPending}
-            onTogglePreset={handleTogglePreset}
-            onUpdateColumn={handleUpdateSchemaColumn}
-            onRemoveColumn={handleRemoveSchemaColumn}
-            onReorder={(fromIndex, toIndex) => setSchema((current) => reorderSchema(current, fromIndex, toIndex))}
-            onSuggest={handleSuggestColumns}
-            onAddSuggestion={handleAddSuggestion}
-            onAddAllSuggestions={handleAddAllSuggestions}
-            onDismissSuggestions={() => setSchemaSuggestions([])}
-            onProceed={() => proceedToConfig(schema)}
-            onEnableAgeMonitoring={handleEnableAgeMonitoring}
-            onSkipAgeMonitoring={handleSkipAgeMonitoring}
-          />
-        ) : (
-          <div className="grid gap-6 xl:grid-cols-[330px_minmax(0,1fr)]">
-            <div className="space-y-6">
-              <ConfigPanel
-                config={config}
-                schema={schema}
-                onChange={handleConfigChange}
-                onGenerate={() => handleGenerate(config, schema)}
-                onReset={() => setConfig(DEFAULT_CONFIG)}
-                onSaveConfig={handleSaveConfig}
-                onLoadConfig={handleLoadConfigClick}
-                onEditSchema={() => setStep("schema")}
-                busy={loading}
-                generateLabel={generateButtonLabel}
-                showGenerateSuccess={showGenerateSuccess}
-              />
-              <AIPromptBox
-                apiStatus={apiStatus}
-                aiExplanation={aiExplanation}
-                onApply={handleApplyAIConstraint}
-                onTestConnection={handleApiTest}
-              />
-              {persistState ? <p className="px-2 text-sm text-blue-300">{persistState}</p> : null}
-            </div>
-
-            <section className="space-y-6">
-              <div className="rounded-3xl border border-amber-500/20 bg-amber-500/10 p-4">
-                <p className="text-sm font-semibold text-amber-100">⚠️ de.bias will monitor these columns for bias:</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {monitoredColumns.map((column) => (
-                    <span key={column.name} className="rounded-full border border-amber-400/30 bg-slate-950/40 px-3 py-1 text-xs text-amber-100">
-                      {column.name}
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-3 text-sm text-amber-50/80">These power your Demographic Parity, Disparate Impact, and Representation metrics.</p>
-              </div>
-
-              {result && !loading && activeTab !== "report" ? (
-                <div className="flex flex-col gap-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-emerald-100">Dataset ready.</p>
-                    <p className="mt-1 text-sm text-emerald-50/80">Check your Fairness Score and metric breakdown to see what improved.</p>
+                <div className="space-y-8">
+                  <div className="glass-card rounded-[2.5rem] p-8">
+                    <ConfigPanel
+                      config={config}
+                      schema={schema}
+                      onChange={handleConfigChange}
+                      onGenerate={() => handleGenerate(config, schema)}
+                      onReset={() => setConfig(DEFAULT_CONFIG)}
+                      onSaveConfig={handleSaveConfig}
+                      onLoadConfig={handleLoadConfigClick}
+                      onEditSchema={() => setStep("schema")}
+                      busy={loading}
+                      generateLabel={generateButtonLabel}
+                      showGenerateSuccess={showGenerateSuccess}
+                    />
                   </div>
-                  <button
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-slate-950/40 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-slate-950/70"
-                    onClick={() => setActiveTab("report")}
-                  >
-                    Check your Fairness Score
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
-              ) : null}
-
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-4 shadow-2xl shadow-slate-950/20">
-                <div className="mb-5 grid gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3 md:grid-cols-3">
-                  {TABS.map((tab, index) => {
-                    const active = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left transition ${
-                          active ? "bg-blue-500/15 text-white ring-1 ring-blue-400/30" : "bg-slate-900/60 text-slate-300 hover:bg-slate-800"
-                        }`}
-                        onClick={() => setActiveTab(tab.id)}
-                      >
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{`0${index + 1}`}</p>
-                          <p className="mt-1 text-sm font-medium">{tab.label}</p>
-                        </div>
-                        <ArrowRight size={16} className={active ? "text-blue-200" : "text-slate-500"} />
-                      </button>
-                    );
-                  })}
+                  <AIPromptBox
+                    apiStatus={apiStatus}
+                    aiExplanation={aiExplanation}
+                    onApply={handleApplyAIConstraint}
+                    onTestConnection={handleApiTest}
+                  />
                 </div>
 
-                <div className="mb-4 flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-slate-400">① View Data</span>
-                  <span className="text-slate-600">→</span>
-                  <span className="text-sm text-slate-400">② Explore Charts</span>
-                  <span className="text-slate-600">→</span>
-                  <span className="text-sm text-slate-400">③ Read Report</span>
-                  <div className="ml-auto flex flex-wrap items-center gap-2">
-                    <div className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-slate-300">{statusMessage}</div>
-                    {resumeReady ? (
-                      <button
-                        className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs text-violet-200"
-                        onClick={() => handleGenerate(lastRequestedConfigRef.current, schema)}
-                      >
-                        Resume Generation
-                      </button>
-                    ) : null}
+                <div className="space-y-12">
+                  <AnimatePresence mode="wait">
+                    {result && (
+                      <ScoreHero 
+                        key="score-hero"
+                        score={score}
+                        scoreTone={scoreTone}
+                        onOpenReport={() => setActiveTab("report")}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  <div className="glass-card rounded-[3rem] p-8 shadow-2xl shadow-gray-200/50">
+                    <div className="mb-8 grid gap-4 md:grid-cols-3">
+                      {TABS.map((tab, index) => {
+                        const active = activeTab === tab.id;
+                        return (
+                          <button
+                            key={tab.id}
+                            className={`flex items-center justify-between rounded-3xl px-6 py-5 text-left transition active:scale-95 ${
+                              active ? "bg-slate-900 text-white shadow-xl shadow-slate-900/20" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                            }`}
+                            onClick={() => setActiveTab(tab.id)}
+                          >
+                            <div>
+                              <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${active ? "text-slate-400" : "text-slate-400"}`}>{`0${index + 1}`}</p>
+                              <p className="mt-1 text-sm font-bold">{tab.label}</p>
+                            </div>
+                            <ArrowRight size={16} className={active ? "text-slate-400" : "text-slate-300"} />
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="min-h-[500px]">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeTab}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {tabs[activeTab]}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
+
+                  <DownloadPanel config={{ ...config, schema }} result={result} />
                 </div>
-
-                {tabs[activeTab]}
-              </div>
-
-              <DownloadPanel config={{ ...config, schema }} result={result} />
-            </section>
-          </div>
-        )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/75 px-4">
-          <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-400/30 border-t-blue-400" />
-            <p className="text-lg font-semibold text-slate-100">{statusMessage}</p>
-            <div className="mt-4 overflow-hidden rounded-full bg-slate-800">
-              <div className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-300" style={{ width: `${statusProgress}%` }} />
+      <AnimatePresence>
+        {loading && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-white/60 px-4 backdrop-blur-lg"
+          >
+            <div className="w-full max-w-md rounded-[3rem] border border-white/50 bg-white/80 p-12 text-center shadow-2xl shadow-emerald-900/10">
+              <div className="mx-auto mb-8 h-20 w-20 animate-spin rounded-full border-[6px] border-emerald-100 border-t-emerald-600" />
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900">{statusMessage}</h2>
+              <div className="mt-8 h-4 overflow-hidden rounded-full bg-emerald-50 p-1">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${statusProgress}%` }}
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500" 
+                />
+              </div>
+              <p className="mt-8 text-sm font-medium text-slate-500 italic">Structural calibration in progress...</p>
             </div>
-            <p className="mt-3 text-sm text-slate-400">de.bias is generating, correcting, and scoring the dataset.</p>
-            <button
-              className="mt-5 rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
-              onClick={handleStopGeneration}
-            >
-              Stop for now
-            </button>
-          </div>
-        </div>
-      ) : null}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {showHelpModal ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/80 px-4">
-          <div className="w-full max-w-2xl rounded-[2rem] border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/40">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-300">How de.bias works</p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-100">Three quick steps</h2>
+      <AnimatePresence>
+        {showHelpModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/20 px-4 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="w-full max-w-2xl rounded-[3rem] border border-white/50 bg-white/90 p-12 shadow-2xl shadow-gray-900/10 backdrop-blur-2xl"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-600">The de.bias methodology</p>
+                  <h2 className="mt-3 text-3xl font-bold text-gray-900">Structure from Entropy</h2>
+                </div>
+                <button 
+                  className="rounded-full bg-gray-100 p-2 text-gray-500 transition hover:bg-gray-200 active:scale-90" 
+                  onClick={() => setShowHelpModal(false)}
+                >
+                  <Check size={20} />
+                </button>
               </div>
-              <button className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300 hover:bg-slate-800" onClick={() => setShowHelpModal(false)}>
-                Close
-              </button>
-            </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
-                <p className="text-sm font-semibold text-slate-100">1. Build your schema</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Pick the columns your use case needs and mark the protected attributes de.bias should monitor.</p>
+              <div className="mt-12 grid gap-6 md:grid-cols-3">
+                <div className="rounded-[2rem] bg-emerald-50 p-6">
+                  <p className="text-sm font-bold text-emerald-800">01. Seed Schema</p>
+                  <p className="mt-3 text-sm font-medium leading-relaxed text-emerald-700/70">Define your structural constraints and monitored attributes.</p>
+                </div>
+                <div className="rounded-[2rem] bg-sky-50 p-6">
+                  <p className="text-sm font-bold text-sky-800">02. Mitigate</p>
+                  <p className="mt-3 text-sm font-medium leading-relaxed text-sky-700/70">Apply sequential bias layers to calibrate the latent distributions.</p>
+                </div>
+                <div className="rounded-[2rem] bg-violet-50 p-6">
+                  <p className="text-sm font-bold text-violet-800">03. Audit</p>
+                  <p className="mt-3 text-sm font-medium leading-relaxed text-violet-700/70">Verify fairness metrics and export the high-integrity result.</p>
+                </div>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
-                <p className="text-sm font-semibold text-slate-100">2. Tune the bias controls</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Adjust mitigation layers that adapt to the financial and demographic columns present in your schema.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
-                <p className="text-sm font-semibold text-slate-100">3. Generate and review</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Use the fairness score, charts, and report to see how your chosen schema behaves after mitigation.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Footer 
+        onShowHelp={() => setShowHelpModal(true)}
+        onLoadDemo={handleDemoScenario}
+      />
 
       <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleLoadConfigFile} />
-    </main>
+    </Layout>
   );
 }
+
+
+

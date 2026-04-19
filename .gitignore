@@ -17,3 +17,5 @@ dist/
 # IDEs
 .vscode/
 .idea/
+.venv/
+node_modules/

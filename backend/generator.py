@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from schema_catalog import CATEGORICAL_DEFAULTS
-from schemas import ColumnConfig, de.biasConfig, SchemaColumn
+from schemas import ColumnConfig, DeBiasConfig, SchemaColumn
 
 try:
     from sdv.metadata import SingleTableMetadata
@@ -275,7 +275,7 @@ def _fallback_sample(seed_df: pd.DataFrame, schema: list[SchemaColumn], size: in
     return sampled
 
 
-def sample_base_dataset(config: de.biasConfig, schema: list[SchemaColumn]) -> GenerationArtifacts:
+def sample_base_dataset(config: DeBiasConfig, schema: list[SchemaColumn]) -> GenerationArtifacts:
     seed_df = create_seed_dataframe(schema)
     fit_df = seed_df.drop(columns=["approval_score"], errors="ignore")
 
