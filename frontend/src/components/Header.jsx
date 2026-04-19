@@ -1,16 +1,16 @@
-import { Menu, Moon, User, Check, Sparkles, ChevronLeft } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
-export default function Header({
-  score,
-  scoreTone,
-  result,
-  loading,
-  step,
+export default function Header({ 
+  score, 
+  scoreTone, 
+  result, 
+  loading, 
+  step, 
   statusProgress,
-  onShowHelp,
-  onLoadDemo,
+  onShowHelp, 
+  onLoadDemo, 
   onEditSchema,
   onSetActiveTab
 }) {
@@ -31,7 +31,7 @@ export default function Header({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.header
+        <motion.header 
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
@@ -39,8 +39,8 @@ export default function Header({
           className="fixed top-8 left-0 right-0 z-50 flex justify-center px-6 pointer-events-none"
         >
           <div className="flex w-full max-w-7xl items-center justify-between pointer-events-auto">
-            {/* Logo / Brand */}
-            <button
+            {/* Logo */}
+            <button 
               onClick={onEditSchema}
               className="flex items-center transition-transform active:scale-95"
             >
@@ -52,7 +52,7 @@ export default function Header({
             {/* Central Pill Navbar */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center rounded-full bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60">
               <div className="relative flex items-center gap-1 sm:gap-4 px-3 sm:px-5 py-1.5">
-                <button
+                <button 
                   onClick={() => setShowMenu(!showMenu)}
                   className={`flex items-center gap-2 text-sm font-semibold transition ${showMenu ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
                 >
@@ -66,15 +66,15 @@ export default function Header({
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute left-0 top-[calc(100%+12px)] w-48 overflow-hidden rounded-3xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl"
+                      className="absolute left-0 top-[calc(100%+12px)] w-48 overflow-hidden rounded-2xl bg-white/95 p-2 shadow-[0_8px_32px_rgba(0,100,100,0.22)] backdrop-blur-xl"
                     >
-                      <button onClick={() => { onEditSchema(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                      <button onClick={() => { onEditSchema(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
                         Home
                       </button>
-                      <button onClick={() => { onLoadDemo(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                      <button onClick={() => { onLoadDemo(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
                         Load Demo
                       </button>
-                      <a href="https://github.com/aarush-luthra/fairgen" target="_blank" rel="noreferrer" className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                      <a href="https://github.com/aarush-luthra/fairgen" target="_blank" rel="noreferrer" className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
                         GitHub
                       </a>
                     </motion.div>
@@ -82,10 +82,6 @@ export default function Header({
                 </AnimatePresence>
 
                 <div className="h-3 w-px bg-slate-200 mx-1" />
-
-                <button className="rounded-full p-1.5 text-slate-400 hover:text-slate-900 transition active:scale-90">
-                  <Moon size={16} />
-                </button>
 
                 <div className="flex items-center justify-center rounded-full bg-slate-900 px-3 py-1.5 min-w-[45px]">
                   <span className="text-[10px] font-bold tabular-nums text-white">
@@ -100,8 +96,8 @@ export default function Header({
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-90">
                 <User size={18} className="text-slate-400" />
               </button>
-
-              <button
+              
+              <button 
                 onClick={isConfig ? onEditSchema : onLoadDemo}
                 className="rounded-full bg-white border border-slate-200 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 transition active:scale-95"
               >
