@@ -11,10 +11,10 @@ function mergeGroupSeries(beforeGroups = [], afterGroups = [], valueKey) {
 
 function Card({ title, subtitle, children }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-      <h3 className="text-base font-semibold text-slate-100">{title}</h3>
-      <p className="mt-1 text-sm text-slate-400">{subtitle}</p>
-      <div className="mt-4 h-72">{children}</div>
+    <div className="rounded-xl bg-white/40 p-4 shadow-[0_2px_12px_rgba(0,100,100,0.14)]">
+      <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+      <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>
+      <div className="mt-3 h-64">{children}</div>
     </div>
   );
 }
@@ -23,13 +23,22 @@ function ComparisonChart({ data, afterColor = "#3b82f6" }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data}>
-        <CartesianGrid stroke="#1e293b" vertical={false} />
-        <XAxis dataKey="name" stroke="#94a3b8" />
-        <YAxis stroke="#94a3b8" />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="before" fill="#64748b" radius={[8, 8, 0, 0]} />
-        <Bar dataKey="after" fill={afterColor} radius={[8, 8, 0, 0]} />
+        <CartesianGrid stroke="#e2e8f0" vertical={false} />
+        <XAxis dataKey="name" stroke="#64748b" tick={{ fontSize: 11 }} />
+        <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "rgba(255,255,255,0.95)",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 4px 16px rgba(0,100,100,0.15)",
+            fontSize: "12px",
+            color: "#334155",
+          }}
+        />
+        <Legend wrapperStyle={{ fontSize: "11px" }} />
+        <Bar dataKey="before" fill="#cbd5e1" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="after" fill={afterColor} radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -80,8 +89,8 @@ export default function DistributionCharts({ charts }) {
 
   if (!cards.length) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-6">
-        <p className="text-sm text-slate-400">Add monitored columns in the Schema Builder to unlock comparison charts.</p>
+      <div className="rounded-xl bg-white/40 p-5 shadow-[0_2px_12px_rgba(0,100,100,0.14)]">
+        <p className="text-sm text-slate-500">Add monitored columns in the Schema Builder to unlock comparison charts.</p>
       </div>
     );
   }

@@ -57,44 +57,44 @@ export default function DownloadPanel({ config, result }) {
   }
 
   return (
-    <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20">
+    <section className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-5 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-100">Download and Export</h2>
-        <p className="mt-1 text-sm text-slate-400">Export the dataset, share the config, or keep building toward HuggingFace publishing.</p>
+        <h2 className="text-lg font-bold text-slate-800">Download and Export</h2>
+        <p className="mt-1 text-sm text-slate-500">Export the dataset, share the config, or push to HuggingFace Hub.</p>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-3">
-        <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-400" onClick={handleCsv}>
+        <button className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onClick={handleCsv}>
           Download CSV
         </button>
-        <button className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 hover:bg-slate-800" onClick={handleJson}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={handleJson}>
           Download Fairness Report
         </button>
-        <button className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 hover:bg-slate-800" onClick={handleShare}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={handleShare}>
           Share Config
         </button>
       </div>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_1fr_auto]">
         <input
-          className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none"
+          className="rounded-lg border border-slate-200/60 bg-white/60 px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-slate-400"
           placeholder="HuggingFace token"
           value={hfToken}
           onChange={(event) => setHfToken(event.target.value)}
         />
         <input
-          className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none"
+          className="rounded-lg border border-slate-200/60 bg-white/60 px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-slate-400"
           placeholder="Repo name, e.g. username/de.bias-demo"
           value={repoName}
           onChange={(event) => setRepoName(event.target.value)}
         />
-        <button className="rounded-2xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-400" onClick={handleExport}>
-          Push to HuggingFace Hub
+        <button className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onClick={handleExport}>
+          Push to Hub
         </button>
       </div>
 
-      {shareState ? <p className="mt-3 text-sm text-emerald-300">{shareState}</p> : null}
-      {exportState ? <p className="mt-2 break-all text-sm text-slate-300">{exportState}</p> : null}
+      {shareState ? <p className="mt-3 text-sm font-medium text-emerald-600">{shareState}</p> : null}
+      {exportState ? <p className="mt-2 break-all text-sm text-slate-500">{exportState}</p> : null}
     </section>
   );
 }

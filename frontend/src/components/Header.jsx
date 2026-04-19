@@ -2,15 +2,15 @@ import { Menu, Moon, User, Check, Sparkles, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
-export default function Header({ 
-  score, 
-  scoreTone, 
-  result, 
-  loading, 
-  step, 
+export default function Header({
+  score,
+  scoreTone,
+  result,
+  loading,
+  step,
   statusProgress,
-  onShowHelp, 
-  onLoadDemo, 
+  onShowHelp,
+  onLoadDemo,
   onEditSchema,
   onSetActiveTab
 }) {
@@ -31,7 +31,7 @@ export default function Header({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.header 
+        <motion.header
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
@@ -40,7 +40,7 @@ export default function Header({
         >
           <div className="flex w-full max-w-7xl items-center justify-between pointer-events-auto">
             {/* Logo / Brand */}
-            <button 
+            <button
               onClick={onEditSchema}
               className="flex items-center transition-transform active:scale-95"
             >
@@ -52,7 +52,7 @@ export default function Header({
             {/* Central Pill Navbar */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center rounded-full bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60">
               <div className="relative flex items-center gap-1 sm:gap-4 px-3 sm:px-5 py-1.5">
-                <button 
+                <button
                   onClick={() => setShowMenu(!showMenu)}
                   className={`flex items-center gap-2 text-sm font-semibold transition ${showMenu ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
                 >
@@ -80,9 +80,9 @@ export default function Header({
                     </motion.div>
                   )}
                 </AnimatePresence>
-                
+
                 <div className="h-3 w-px bg-slate-200 mx-1" />
-                
+
                 <button className="rounded-full p-1.5 text-slate-400 hover:text-slate-900 transition active:scale-90">
                   <Moon size={16} />
                 </button>
@@ -100,8 +100,8 @@ export default function Header({
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-90">
                 <User size={18} className="text-slate-400" />
               </button>
-              
-              <button 
+
+              <button
                 onClick={isConfig ? onEditSchema : onLoadDemo}
                 className="rounded-full bg-white border border-slate-200 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 transition active:scale-95"
               >

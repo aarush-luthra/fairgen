@@ -7,7 +7,7 @@ export default function ScoreHero({ score, scoreTone, onOpenReport }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
-      className="mt-12 grid w-full gap-4 rounded-[2.5rem] border border-white/50 bg-white/40 p-8 text-left shadow-xl shadow-emerald-900/5 backdrop-blur-xl transition hover:border-emerald-200"
+      className="mt-12 grid w-full gap-4 rounded-[2.5rem] bg-gradient-to-br from-white/70 to-emerald-50/40 p-8 text-left shadow-[0_4px_24px_rgba(0,100,100,0.22)] backdrop-blur-xl transition hover:shadow-[0_8px_32px_rgba(0,100,100,0.28)]"
       onClick={onOpenReport}
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">

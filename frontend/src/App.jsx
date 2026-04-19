@@ -483,7 +483,7 @@ export default function App() {
                 className="grid gap-12 xl:grid-cols-[380px_minmax(0,1fr)]"
               >
                 <div className="space-y-8">
-                  <div className="glass-card rounded-[2.5rem] p-8">
+                  <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
                     <ConfigPanel
                       config={config}
                       schema={schema}
@@ -518,15 +518,15 @@ export default function App() {
                     )}
                   </AnimatePresence>
 
-                  <div className="glass-card rounded-[3rem] p-8 shadow-2xl shadow-gray-200/50">
+                  <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
                     <div className="mb-8 grid gap-4 md:grid-cols-3">
                       {TABS.map((tab, index) => {
                         const active = activeTab === tab.id;
                         return (
                           <button
                             key={tab.id}
-                            className={`flex items-center justify-between rounded-3xl px-6 py-5 text-left transition active:scale-95 ${
-                              active ? "bg-slate-900 text-white shadow-xl shadow-slate-900/20" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                            className={`flex items-center justify-between rounded-xl px-5 py-4 text-left transition active:scale-95 ${
+                              active ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/50 text-slate-500 hover:bg-white/70 shadow-[0_1px_8px_rgba(0,100,100,0.14)]"
                             }`}
                             onClick={() => setActiveTab(tab.id)}
                           >
