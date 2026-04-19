@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function Footer({ onShowHelp, onLoadDemo }) {
+export default function Footer({ onLoadDemo }) {
   return (
     <footer className="mx-6 mb-6 mt-32 overflow-hidden rounded-[4rem] bg-slate-900 px-12 pb-12 pt-20 text-white selection:bg-white selection:text-slate-900">
       <div className="mx-auto max-w-7xl">
@@ -15,7 +15,6 @@ export default function Footer({ onShowHelp, onLoadDemo }) {
               <button className="block text-sm font-medium opacity-60 hover:opacity-100">Manifesto</button>
             </div>
             <div className="space-y-4">
-              <button onClick={onShowHelp} className="block text-sm font-medium opacity-60 hover:opacity-100">Methodology</button>
               <button className="block text-sm font-medium opacity-60 hover:opacity-100">Privacy policy</button>
               <button className="block text-sm font-medium opacity-60 hover:opacity-100">Terms</button>
               <a href="https://github.com/aarush-luthra/fairgen" target="_blank" rel="noreferrer" className="block text-sm font-medium opacity-60 hover:opacity-100">GitHub</a>

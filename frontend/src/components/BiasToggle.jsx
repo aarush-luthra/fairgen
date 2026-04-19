@@ -8,14 +8,13 @@ export default function BiasToggle({
   tooltip,
   children,
   defaultOpen = false,
-  accentClassName = "border-slate-700",
   enabled = true,
   onEnabledChange,
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className={`rounded-2xl border border-slate-800 border-l-4 ${accentClassName} bg-slate-950/50`}>
+    <div className="rounded-2xl border border-slate-800 bg-slate-950/50">
       <button
         className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left"
         onClick={() => setOpen((value) => !value)}

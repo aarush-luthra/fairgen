@@ -156,10 +156,10 @@ export default function PretextHero() {
     <div ref={containerRef} className="relative w-full h-[500px] flex items-center justify-center overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
       <div className="relative z-10 text-center pointer-events-none">
-        <h1 className="text-7xl font-bold tracking-tight text-slate-900 sm:text-9xl">
+        <h1 className="text-[clamp(4rem,15vw,10rem)] font-bold tracking-tighter text-slate-950 leading-none">
           de.bias
         </h1>
-        <p className="mt-6 text-xl font-medium text-slate-500 max-w-xl mx-auto">
+        <p className="mt-8 text-lg font-medium text-slate-500 max-w-lg mx-auto leading-relaxed">
           High-performance structural calibration for synthetic credit datasets.
         </p>
       </div>

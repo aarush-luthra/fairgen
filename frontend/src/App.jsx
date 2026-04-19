@@ -12,6 +12,7 @@ import SchemaBuilder from "./components/SchemaBuilder";
 import ScoreHero from "./components/ScoreHero";
 import Layout from "./components/Layout";
 import PretextHero from "./components/PretextHero";
+import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { MotionWrapper, StaggerWrapper } from "./components/MotionWrapper";
 
@@ -119,7 +120,6 @@ export default function App() {
   const [apiStatus, setApiStatus] = useState({ connected: false, message: "Not tested" });
   const [resumeReady, setResumeReady] = useState(false);
   const [persistState, setPersistState] = useState("");
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [showGenerateSuccess, setShowGenerateSuccess] = useState(false);
   const [lastGeneratedConfig, setLastGeneratedConfig] = useState(DEFAULT_CONFIG);
   const [lastGeneratedSchema, setLastGeneratedSchema] = useState(DEFAULT_SCHEMA);
@@ -132,6 +132,10 @@ export default function App() {
   const fileInputRef = useRef(null);
   const lastRequestedConfigRef = useRef(DEFAULT_CONFIG);
   const successTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   const score = result?.metrics?.OFS ?? 0;
   const scoreTone = fairnessTone(score);
@@ -416,8 +420,29 @@ export default function App() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-6 pb-24">
-        <PretextHero />
+      <Header 
+        score={score}
+        scoreTone={scoreTone}
+        result={result}
+        loading={loading}
+        step={step}
+        statusProgress={statusProgress}
+        onEditSchema={() => setStep("schema")}
+        onSetActiveTab={setActiveTab}
+      />
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-32">
+        <AnimatePresence>
+          {step === "schema" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <PretextHero />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="mt-8">
           <AnimatePresence mode="wait">
@@ -562,53 +587,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showHelpModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/20 px-4 backdrop-blur-sm"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="w-full max-w-2xl rounded-[3rem] border border-white/50 bg-white/90 p-12 shadow-2xl shadow-gray-900/10 backdrop-blur-2xl"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-600">The de.bias methodology</p>
-                  <h2 className="mt-3 text-3xl font-bold text-gray-900">Structure from Entropy</h2>
-                </div>
-                <button 
-                  className="rounded-full bg-gray-100 p-2 text-gray-500 transition hover:bg-gray-200 active:scale-90" 
-                  onClick={() => setShowHelpModal(false)}
-                >
-                  <Check size={20} />
-                </button>
-              </div>
-              <div className="mt-12 grid gap-6 md:grid-cols-3">
-                <div className="rounded-[2rem] bg-emerald-50 p-6">
-                  <p className="text-sm font-bold text-emerald-800">01. Seed Schema</p>
-                  <p className="mt-3 text-sm font-medium leading-relaxed text-emerald-700/70">Define your structural constraints and monitored attributes.</p>
-                </div>
-                <div className="rounded-[2rem] bg-sky-50 p-6">
-                  <p className="text-sm font-bold text-sky-800">02. Mitigate</p>
-                  <p className="mt-3 text-sm font-medium leading-relaxed text-sky-700/70">Apply sequential bias layers to calibrate the latent distributions.</p>
-                </div>
-                <div className="rounded-[2rem] bg-violet-50 p-6">
-                  <p className="text-sm font-bold text-violet-800">03. Audit</p>
-                  <p className="mt-3 text-sm font-medium leading-relaxed text-violet-700/70">Verify fairness metrics and export the high-integrity result.</p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <Footer 
-        onShowHelp={() => setShowHelpModal(true)}
         onLoadDemo={handleDemoScenario}
       />
 
@@ -616,6 +595,3 @@ export default function App() {
     </Layout>
   );
 }
-
-
-

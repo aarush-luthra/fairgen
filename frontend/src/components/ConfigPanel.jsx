@@ -100,7 +100,6 @@ export default function ConfigPanel({
           description="Corrects discriminatory approval patterns inherited from past lending decisions."
           tooltip={TOOLTIP_COPY.historicalBias}
           defaultOpen
-          accentClassName="border-l-amber-400"
           enabled={config.historicalCorrection > 0}
           onEnabledChange={(enabled) =>
             onChange({
@@ -123,7 +122,6 @@ export default function ConfigPanel({
           title="Representation Bias"
           description="Improves the presence of women, minorities, and rural applicants in the generated sample."
           tooltip={TOOLTIP_COPY.representationBias}
-          accentClassName="border-l-sky-400"
           enabled={representationIsEnabled}
           onEnabledChange={(enabled) =>
             onChange({
@@ -175,7 +173,6 @@ export default function ConfigPanel({
           title="Label Bias"
           description="Corrects unfair borderline approval outcomes where protected groups are treated differently."
           tooltip={TOOLTIP_COPY.labelBias}
-          accentClassName="border-l-violet-400"
           enabled={config.labelCorrection > 0}
           onEnabledChange={(enabled) =>
             onChange({
@@ -198,7 +195,6 @@ export default function ConfigPanel({
           title="Measurement Noise"
           description="Applies equal measurement noise across groups so data quality inconsistencies are not group-specific."
           tooltip={TOOLTIP_COPY.measurementBias}
-          accentClassName="border-l-teal-400"
           enabled={config.measurementNoise.enabled}
           onEnabledChange={(enabled) => onChange({ measurementNoise: { enabled } })}
         >

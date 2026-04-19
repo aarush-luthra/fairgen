@@ -1,5 +1,6 @@
-import { Check, CircleHelp, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { Menu, Moon, User, Check, Sparkles, ChevronLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 export default function Header({ 
   score, 
@@ -7,69 +8,109 @@ export default function Header({
   result, 
   loading, 
   step, 
-  generateButtonLabel, 
-  showGenerateSuccess, 
+  statusProgress,
   onShowHelp, 
   onLoadDemo, 
-  onGenerate,
+  onEditSchema,
   onSetActiveTab
 }) {
-  return (
-    <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="min-w-0">
-            <motion.p 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs font-bold uppercase tracking-[0.4em] text-blue-600"
-            >
-              de.bias
-            </motion.p>
-            <p className="mt-0.5 truncate text-[11px] font-medium text-gray-500 uppercase tracking-wider">
-              Schema Builder → Configuration → Generate → Report
-            </p>
-          </div>
-          {result ? (
-            <motion.button
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.05 }}
-              className={`hidden rounded-full border px-3 py-1 text-xs font-semibold md:inline-flex ${scoreTone.chipClassName}`}
-              onClick={() => onSetActiveTab("report")}
-            >
-              Score {score}
-            </motion.button>
-          ) : null}
-        </div>
+  const isConfig = step === "config";
+  const [isVisible, setIsVisible] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
 
-        <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-          <button
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 active:scale-95"
-            onClick={onShowHelp}
-          >
-            <CircleHelp size={14} />
-            How it works
-          </button>
-          <button
-            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 active:scale-95"
-            onClick={onLoadDemo}
-          >
-            Load Demo
-          </button>
-          {step === "config" ? (
-            <motion.button
-              layoutId="generate-btn"
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
-              onClick={onGenerate}
-              disabled={loading}
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsVisible(window.scrollY < 20);
+      if (window.scrollY > 20) setShowMenu(false);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.header 
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed top-8 left-0 right-0 z-50 flex justify-center px-6 pointer-events-none"
+        >
+          <div className="flex w-full max-w-7xl items-center justify-between pointer-events-auto">
+            {/* Logo / Brand */}
+            <button 
+              onClick={onEditSchema}
+              className="flex items-center transition-transform active:scale-95"
             >
-              {showGenerateSuccess ? <Check size={14} /> : <Sparkles size={14} />}
-              {generateButtonLabel}
-            </motion.button>
-          ) : null}
-        </div>
-      </div>
-    </header>
+              <span className="text-xl font-bold tracking-tighter text-slate-900">
+                de.bias
+              </span>
+            </button>
+
+            {/* Central Pill Navbar */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center rounded-full bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60">
+              <div className="relative flex items-center gap-1 sm:gap-4 px-3 sm:px-5 py-1.5">
+                <button 
+                  onClick={() => setShowMenu(!showMenu)}
+                  className={`flex items-center gap-2 text-sm font-semibold transition ${showMenu ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  <Menu size={16} />
+                  <span className="hidden sm:inline">Menu</span>
+                </button>
+
+                <AnimatePresence>
+                  {showMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute left-0 top-[calc(100%+12px)] w-48 overflow-hidden rounded-3xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl"
+                    >
+                      <button onClick={() => { onEditSchema(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                        Home
+                      </button>
+                      <button onClick={() => { onLoadDemo(); setShowMenu(false); }} className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                        Load Demo
+                      </button>
+                      <a href="https://github.com/aarush-luthra/fairgen" target="_blank" rel="noreferrer" className="flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                        GitHub
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
+                <div className="h-3 w-px bg-slate-200 mx-1" />
+                
+                <button className="rounded-full p-1.5 text-slate-400 hover:text-slate-900 transition active:scale-90">
+                  <Moon size={16} />
+                </button>
+
+                <div className="flex items-center justify-center rounded-full bg-slate-900 px-3 py-1.5 min-w-[45px]">
+                  <span className="text-[10px] font-bold tabular-nums text-white">
+                    {loading ? `${statusProgress}%` : isConfig ? "100%" : "0%"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-4">
+              <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-90">
+                <User size={18} className="text-slate-400" />
+              </button>
+              
+              <button 
+                onClick={isConfig ? onEditSchema : onLoadDemo}
+                className="rounded-full bg-white border border-slate-200 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 transition active:scale-95"
+              >
+                {isConfig ? "Edit Schema" : "Load Demo"}
+              </button>
+            </div>
+          </div>
+        </motion.header>
+      )}
+    </AnimatePresence>
   );
 }

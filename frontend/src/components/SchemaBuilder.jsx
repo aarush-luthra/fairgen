@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { GripVertical, Plus, Sparkles, Trash2 } from "lucide-react";
+import { GripVertical, Plus, Sparkles, Trash2, ChevronDown } from "lucide-react";
 import { SCHEMA_CATEGORY_ORDER, SCHEMA_PRESETS, buildSchemaColumn } from "../constants";
 
 function TypeBadge({ type }) {
-  return <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-xs text-slate-300">{type}</span>;
+  return <span className="rounded-md bg-slate-100 border border-slate-300 px-1.5 py-0.5 text-[11px] font-semibold text-slate-600">{type}</span>;
 }
 
 function cloneValue(value) {
@@ -30,29 +30,29 @@ function PresetPicker({ schema, onToggle, searchQuery, onSearchChange }) {
   }, [searchQuery]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div>
-        <h2 className="text-lg font-semibold text-slate-100">Preset Column Picker</h2>
-        <p className="mt-1 text-sm text-slate-400">Search and add the columns your synthetic dataset should contain.</p>
+        <h2 className="text-base font-bold text-slate-900">Preset Columns</h2>
+        <p className="mt-0.5 text-xs text-slate-500">Toggle columns to add them to your schema.</p>
       </div>
 
       <input
         value={searchQuery}
         onChange={(event) => onSearchChange(event.target.value)}
         placeholder="Search columns..."
-        className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none"
+        className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition"
       />
 
-      <div className="space-y-4">
+      <div className="max-h-[45vh] overflow-y-auto scrollbar-minimal space-y-3">
         {filteredCategories.map(({ category, entries }) => (
-          <section key={category} className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-            <h3 className="text-sm font-semibold text-slate-200">{category}</h3>
-            <div className="mt-3 space-y-2">
+          <section key={category}>
+            <h3 className="sticky top-0 z-10 bg-slate-50 text-[11px] font-bold uppercase tracking-widest text-slate-400 py-1.5 px-1 mb-0.5">{category}</h3>
+            <div className="space-y-px">
               {entries.map(([name, preset]) => (
                 <label
                   key={name}
-                  className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-3 py-3 transition ${
-                    selectedNames.has(name) ? "border-blue-500/30 bg-blue-500/10" : "border-slate-800 bg-slate-950/60 hover:bg-slate-900"
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition text-sm ${
+                    selectedNames.has(name) ? "bg-slate-200/60" : "hover:bg-slate-100/60"
                   }`}
                 >
                   <input
@@ -60,20 +60,16 @@ function PresetPicker({ schema, onToggle, searchQuery, onSearchChange }) {
                     checked={selectedNames.has(name)}
                     disabled={preset.locked}
                     onChange={() => onToggle(name)}
-                    className="mt-1 accent-blue-500"
+                    className="accent-slate-800 shrink-0 w-4 h-4"
                   />
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-100">{preset.label}</span>
-                      <TypeBadge type={preset.type} />
-                      {preset.fairness_sensitive ? (
-                        <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] text-amber-100">Fairness</span>
-                      ) : null}
-                      {preset.locked ? (
-                        <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] text-slate-300">Required</span>
-                      ) : null}
-                    </div>
-                  </div>
+                  <span className="font-semibold truncate text-slate-800">{preset.label}</span>
+                  <TypeBadge type={preset.type} />
+                  {preset.fairness_sensitive && (
+                    <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-white">Fair</span>
+                  )}
+                  {preset.locked && (
+                    <span className="rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">Required</span>
+                  )}
                 </label>
               ))}
             </div>
@@ -89,59 +85,59 @@ function SuggestionPanel({ onSuggest, loading, suggestions, onAddSuggestion, onA
   const [description, setDescription] = useState("");
 
   return (
-    <section className="rounded-3xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-slate-900 p-4">
+    <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
       <button className="flex w-full items-center justify-between text-left" onClick={() => setOpen((value) => !value)}>
         <div>
-          <p className="text-sm font-semibold text-violet-100">🤖 Ask AI to suggest columns for your use case</p>
-          <p className="mt-1 text-sm text-slate-300">Optional GPT-4o mini add-on for credit and fairness-oriented schema ideas.</p>
+          <p className="text-sm font-bold text-slate-800">🤖 Ask AI to suggest columns</p>
+          <p className="mt-0.5 text-xs text-slate-500">GPT-4o mini for fairness-oriented schema ideas.</p>
         </div>
-        <span className="text-sm text-violet-200">{open ? "Hide" : "Open"}</span>
+        <span className="text-xs font-bold text-slate-600 bg-slate-200 px-2 py-1 rounded-md">{open ? "Hide" : "Open"}</span>
       </button>
 
       {open ? (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-3">
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            rows={4}
-            className="w-full rounded-2xl border border-violet-400/20 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500"
-            placeholder="Describe what you're building... e.g. A model to predict mortgage defaults for first-time homebuyers in rural areas"
+            rows={3}
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            placeholder="Describe what you're building... e.g. A model to predict mortgage defaults"
           />
           <button
-            className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-50 transition"
             disabled={!description.trim() || loading}
             onClick={() => onSuggest(description)}
           >
-            <Sparkles size={16} />
+            <Sparkles size={14} />
             {loading ? "Suggesting..." : "Suggest Columns"}
           </button>
 
           {suggestions.length ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {suggestions.map((suggestion) => (
-                <div key={suggestion.name} className="rounded-2xl border border-violet-500/20 bg-slate-950/60 p-4">
+                <div key={suggestion.name} className="rounded-lg border border-slate-200 bg-white p-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium text-slate-100">{suggestion.name}</p>
+                    <p className="font-bold text-sm text-slate-800">{suggestion.name}</p>
                     <TypeBadge type={suggestion.type} />
                     {suggestion.fairness_sensitive ? (
-                      <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] text-amber-100">Fairness</span>
+                      <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-white">Fair</span>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{suggestion.reason}</p>
+                  <p className="mt-1.5 text-xs leading-5 text-slate-500">{suggestion.reason}</p>
                   <button
-                    className="mt-3 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1 text-xs text-violet-100 hover:bg-violet-500/20"
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
                     onClick={() => onAddSuggestion(suggestion)}
                   >
-                    <Plus size={14} />
+                    <Plus size={12} />
                     Add
                   </button>
                 </div>
               ))}
               <div className="flex flex-wrap gap-2">
-                <button className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-400" onClick={onAddAllSuggestions}>
+                <button className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-800 transition" onClick={onAddAllSuggestions}>
                   Add All
                 </button>
-                <button className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800" onClick={onDismissSuggestions}>
+                <button className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" onClick={onDismissSuggestions}>
                   Dismiss
                 </button>
               </div>
@@ -154,7 +150,7 @@ function SuggestionPanel({ onSuggest, loading, suggestions, onAddSuggestion, onA
 }
 
 function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragStart, onDragOver, onDrop }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const categorical = column.type === "categorical";
   const numerical = column.type === "numerical";
   const boolean = column.type === "boolean";
@@ -174,7 +170,7 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
 
   return (
     <article
-      className="rounded-2xl border border-slate-800 bg-slate-950/50"
+      className={`rounded-lg border transition-all ${open ? 'border-slate-400 bg-slate-50 shadow-sm' : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300'}`}
       draggable={!locked}
       onDragStart={() => onDragStart(index)}
       onDragOver={(event) => {
@@ -186,176 +182,168 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
         onDrop(index);
       }}
     >
-      <div className="flex items-start gap-3 px-4 py-4">
-        <button className="mt-1 text-slate-500" disabled={locked}>
-          <GripVertical size={16} />
+      {/* Compact Header Row */}
+      <div 
+        className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer select-none"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <button className="text-slate-400 shrink-0 hover:text-slate-600 transition" disabled={locked} onClick={(e) => e.stopPropagation()}>
+          <GripVertical size={14} />
         </button>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <button className="font-medium text-slate-100" onClick={() => setOpen((value) => !value)}>
-              {column.name}
-            </button>
-            <TypeBadge type={column.type} />
-            {column.fairness_sensitive ? (
-              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] text-amber-100">Monitored for fairness</span>
-            ) : null}
-            {locked ? <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] text-slate-300">Locked</span> : null}
-          </div>
-        </div>
-        {!locked ? (
-          <button className="rounded-full border border-slate-700 p-2 text-slate-400 hover:bg-slate-800" onClick={onRemove}>
-            <Trash2 size={14} />
+        <span className="font-bold text-sm text-slate-800 truncate">{column.name}</span>
+        <TypeBadge type={column.type} />
+        {column.fairness_sensitive && (
+          <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-white">Fairness</span>
+        )}
+        {locked && <span className="rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">Locked</span>}
+        <div className="flex-1" />
+        <ChevronDown size={14} className={`text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        {!locked && (
+          <button className="rounded-md p-1 text-slate-400 hover:bg-slate-200 hover:text-red-500 transition" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
+            <Trash2 size={13} />
           </button>
-        ) : null}
+        )}
       </div>
 
-      {open ? (
-        <div className="space-y-4 border-t border-slate-800 px-4 py-4">
-          <div className="grid gap-3 md:grid-cols-2">
+      {/* Expanded Detail Panel */}
+      {open && (
+        <div className="border-t border-slate-200 px-3 py-3 space-y-3">
+          {/* Row 1: Name + Type + Fairness */}
+          <div className="grid grid-cols-[1fr_120px_auto] gap-2 items-end">
             <label className="block">
-              <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Column name</span>
+              <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Name</span>
               <input
                 value={column.name}
                 disabled={locked}
-                onChange={(event) => onChange({ ...column, name: event.target.value.replace(/\s+/g, "_") })}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                onChange={(e) => onChange({ ...column, name: e.target.value.replace(/\s+/g, "_") })}
+                className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-200"
               />
             </label>
             <label className="block">
-              <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Data type</span>
+              <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Type</span>
               <select
                 value={column.type}
                 disabled={locked}
-                onChange={(event) => onChange({ ...column, type: event.target.value })}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                onChange={(e) => onChange({ ...column, type: e.target.value })}
+                className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500"
               >
                 <option value="numerical">numerical</option>
                 <option value="categorical">categorical</option>
                 <option value="boolean">boolean</option>
               </select>
             </label>
+            <label className="flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] text-slate-700 cursor-pointer whitespace-nowrap font-semibold">
+              <input
+                type="checkbox"
+                checked={column.fairness_sensitive}
+                onChange={(e) => onChange({ ...column, fairness_sensitive: e.target.checked })}
+                className="accent-slate-800 w-3.5 h-3.5"
+              />
+              Fairness
+            </label>
           </div>
 
-          <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-3 text-sm text-slate-200">
-            <span>Monitor this column for fairness</span>
-            <input
-              type="checkbox"
-              checked={column.fairness_sensitive}
-              onChange={(event) => onChange({ ...column, fairness_sensitive: event.target.checked })}
-              className="accent-blue-500"
-            />
-          </label>
-
-          {numerical ? (
-            <div className="grid gap-3 md:grid-cols-2">
+          {/* Numerical: Min/Max/Distribution/Nullable */}
+          {numerical && (
+            <div className="grid grid-cols-4 gap-2 items-end">
               <label className="block">
-                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Min</span>
+                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Min</span>
                 <input
                   type="number"
                   value={column.config.min ?? ""}
-                  onChange={(event) => updateConfig({ min: Number(event.target.value) })}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                  onChange={(e) => updateConfig({ min: Number(e.target.value) })}
+                  className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-200"
                 />
               </label>
               <label className="block">
-                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Max</span>
+                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Max</span>
                 <input
                   type="number"
                   value={column.config.max ?? ""}
-                  onChange={(event) => updateConfig({ max: Number(event.target.value) })}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                  onChange={(e) => updateConfig({ max: Number(e.target.value) })}
+                  className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-200"
                 />
               </label>
               <label className="block">
-                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Distribution</span>
+                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Dist.</span>
                 <select
                   value={column.config.distribution || "uniform"}
-                  onChange={(event) => updateConfig({ distribution: event.target.value })}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                  onChange={(e) => updateConfig({ distribution: e.target.value })}
+                  className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500"
                 >
                   <option value="normal">normal</option>
                   <option value="log-normal">log-normal</option>
                   <option value="uniform">uniform</option>
                 </select>
               </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-3 text-sm text-slate-200">
-                <span>Nullable</span>
+              <label className="flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] text-slate-700 cursor-pointer font-semibold">
                 <input
                   type="checkbox"
                   checked={Boolean(column.config.nullable)}
-                  onChange={(event) => updateConfig({ nullable: event.target.checked })}
-                  className="accent-blue-500"
+                  onChange={(e) => updateConfig({ nullable: e.target.checked })}
+                  className="accent-slate-800 w-3.5 h-3.5"
                 />
+                Nullable
               </label>
             </div>
-          ) : null}
+          )}
 
-          {categorical ? (
-            <div className="space-y-3">
-              {options.map((option, optionIndex) => (
-                <div key={`${column.name}-${optionIndex}`} className="grid gap-3 md:grid-cols-[1fr_140px_auto]">
+          {/* Categorical: compact option rows */}
+          {categorical && (
+            <div className="space-y-1.5">
+              <div className="grid grid-cols-[1fr_80px_auto] gap-1.5 text-[11px] uppercase tracking-wider text-slate-500 font-bold px-1">
+                <span>Label</span>
+                <span>Weight</span>
+                <span></span>
+              </div>
+              {options.map((option, oi) => (
+                <div key={`${column.name}-${oi}`} className="grid grid-cols-[1fr_80px_auto] gap-1.5">
                   <input
                     value={option}
-                    onChange={(event) => {
-                      const nextOptions = [...options];
-                      nextOptions[optionIndex] = event.target.value;
-                      updateConfig({ options: nextOptions });
+                    onChange={(e) => {
+                      const next = [...options]; next[oi] = e.target.value;
+                      updateConfig({ options: next });
                     }}
-                    className="rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                    className="rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500"
                   />
                   <input
-                    type="number"
-                    step="0.01"
-                    value={weights[optionIndex] ?? ""}
-                    onChange={(event) => {
-                      const nextWeights = [...weights];
-                      nextWeights[optionIndex] = Number(event.target.value);
-                      updateConfig({ weights: nextWeights });
+                    type="number" step="0.01"
+                    value={weights[oi] ?? ""}
+                    onChange={(e) => {
+                      const next = [...weights]; next[oi] = Number(e.target.value);
+                      updateConfig({ weights: next });
                     }}
-                    className="rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                    className="rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500"
                   />
                   <button
-                    className="rounded-2xl border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                    className="rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-200 hover:text-red-500 transition font-bold"
                     onClick={() => {
-                      const nextOptions = options.filter((_, idx) => idx !== optionIndex);
-                      const nextWeights = weights.filter((_, idx) => idx !== optionIndex);
-                      updateConfig({ options: nextOptions, weights: nextWeights });
+                      updateConfig({ options: options.filter((_, i) => i !== oi), weights: weights.filter((_, i) => i !== oi) });
                     }}
-                  >
-                    Remove
-                  </button>
+                  >✕</button>
                 </div>
               ))}
               <button
-                className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-300 hover:bg-slate-800"
-                onClick={() =>
-                  updateConfig({
-                    options: [...options, `option_${options.length + 1}`],
-                    weights: [...weights, 1],
-                  })
-                }
-              >
-                Add option
-              </button>
+                className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition"
+                onClick={() => updateConfig({ options: [...options, `option_${options.length + 1}`], weights: [...weights, 1] })}
+              >+ Add option</button>
             </div>
-          ) : null}
+          )}
 
-          {boolean && column.name !== "loan_approved" ? (
+          {/* Boolean: compact base rate */}
+          {boolean && column.name !== "loan_approved" && (
             <label className="block">
-              <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Base rate</span>
+              <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold">Base rate</span>
               <input
-                type="number"
-                min="0"
-                max="1"
-                step="0.01"
+                type="number" min="0" max="1" step="0.01"
                 value={column.config.base_rate ?? 0.5}
-                onChange={(event) => updateConfig({ base_rate: Number(event.target.value) })}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                onChange={(e) => updateConfig({ base_rate: Number(e.target.value) })}
+                className="w-full max-w-[140px] rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-200"
               />
             </label>
-          ) : null}
+          )}
         </div>
-      ) : null}
+      )}
     </article>
   );
 }
@@ -383,17 +371,19 @@ export default function SchemaBuilder({
 
   return (
     <section className="space-y-6">
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-300">Schema Builder</p>
-        <h2 className="mt-2 text-2xl font-semibold text-slate-100">Build your dataset schema first</h2>
-        <p className="mt-2 max-w-3xl text-sm text-slate-300">
-          Choose the columns you want, tune each field’s behavior, and lock in the protected attributes de.bias should monitor for bias.
+      {/* Header Card */}
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-500">Schema Builder</p>
+        <h2 className="mt-2 text-2xl font-bold text-slate-900">Build your dataset schema first</h2>
+        <p className="mt-1.5 max-w-3xl text-sm text-slate-500">
+          Choose the columns you want, tune each field's behavior, and lock in the protected attributes de.bias should monitor for bias.
         </p>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20">
+        {/* Left Column */}
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
             <PresetPicker schema={schema} onToggle={onTogglePreset} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
           </div>
           <SuggestionPanel
@@ -406,16 +396,17 @@ export default function SchemaBuilder({
           />
         </div>
 
-        <div className="space-y-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20">
-          <div className="flex items-center justify-between gap-3">
+        {/* Right Column: Your Schema */}
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <div className="flex items-center justify-between gap-3 mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-100">Your Schema</h3>
-              <p className="mt-1 text-sm text-slate-400">Drag cards to set CSV column order.</p>
+              <h3 className="text-base font-bold text-slate-900">Your Schema</h3>
+              <p className="mt-0.5 text-xs text-slate-500">Click a card to expand. Drag to reorder.</p>
             </div>
-            <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-slate-300">{schema.length} columns</span>
+            <span className="rounded-md border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{schema.length} columns</span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-1.5 max-h-[55vh] overflow-y-auto scrollbar-minimal pr-0.5">
             {schema.map((column, index) => (
               <SchemaColumnCard
                 key={`${column.name}-${index}`}
@@ -437,23 +428,23 @@ export default function SchemaBuilder({
             ))}
           </div>
 
-          {validationError ? <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{validationError}</p> : null}
+          {validationError ? <p className="mt-3 rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">{validationError}</p> : null}
 
           {agePromptPending ? (
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
-              <p className="text-sm font-semibold text-amber-100">Want to monitor age as a protected attribute too?</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-300" onClick={onEnableAgeMonitoring}>
+            <div className="mt-3 rounded-lg border border-slate-300 bg-slate-100 p-3">
+              <p className="text-sm font-bold text-slate-800">Want to monitor age as a protected attribute too?</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-800 transition" onClick={onEnableAgeMonitoring}>
                   Yes
                 </button>
-                <button className="rounded-full border border-amber-400/30 px-4 py-2 text-sm text-amber-100 hover:bg-amber-500/10" onClick={onSkipAgeMonitoring}>
+                <button className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition" onClick={onSkipAgeMonitoring}>
                   No thanks
                 </button>
               </div>
             </div>
           ) : null}
 
-          <button className="rounded-2xl bg-blue-500 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-400" onClick={onProceed}>
+          <button className="mt-4 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition active:scale-[0.98] shadow-lg" onClick={onProceed}>
             Build My Dataset →
           </button>
         </div>
