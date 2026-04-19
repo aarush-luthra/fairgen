@@ -20,13 +20,13 @@
 
 ## Frontend Modules
 
-- `App.jsx`: overall composition and state orchestration
-- `components/ConfigPanel.jsx`: configuration controls
-- `components/AIPromptBox.jsx`: constraint input and explanation panel
-- `components/DataTable.jsx`: tabular dataset preview
-- `components/DistributionCharts.jsx`: before/after charts
-- `components/FairnessReport.jsx`: score and metric cards
-- `components/DownloadPanel.jsx`: download and export actions
+- `frontend/src/App.jsx`: overall composition and state orchestration
+- `frontend/src/components/ConfigPanel.jsx`: configuration controls
+- `frontend/src/components/AIPromptBox.jsx`: constraint input and explanation panel
+- `frontend/src/components/DataTable.jsx`: tabular dataset preview
+- `frontend/src/components/DistributionCharts.jsx`: before/after charts
+- `frontend/src/components/FairnessReport.jsx`: score and metric cards
+- `frontend/src/components/DownloadPanel.jsx`: download and export actions
 
 ## Delivery Notes
 

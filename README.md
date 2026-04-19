@@ -51,7 +51,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ### Frontend
 
 ```bash
-cd app
+cd frontend
 npm install
 npm run dev
 ```
@@ -68,16 +68,16 @@ Optional for HuggingFace export at runtime:
 
 - supply token and repo name in the UI
 
-## Docker
+## Structure
 
-```bash
-docker compose up --build
 ```
-
-This starts:
-
-- FastAPI on `http://localhost:8000`
-- React app on `http://localhost:5173`
+fairgen/
+├── frontend/     # React + Vite app
+├── backend/      # FastAPI backend
+├── docs/         # Architecture and phase docs
+├── notebooks/    # Jupyter walkthroughs
+└── examples/     # Sample outputs
+```
 
 ## Built On / Inspired By
 
