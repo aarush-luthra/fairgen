@@ -14,23 +14,23 @@ export default function BiasToggle({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/50">
+    <div className="rounded-xl bg-white/40 transition shadow-[0_2px_12px_rgba(0,128,128,0.06)]">
       <button
         className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left"
         onClick={() => setOpen((value) => !value)}
       >
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-medium text-slate-100">{title}</p>
+            <p className="font-bold text-slate-800">{title}</p>
             {tooltip ? <Tooltip text={tooltip} /> : null}
           </div>
-          <p className="mt-1 text-sm text-slate-400">{description}</p>
+          <p className="mt-1 text-sm text-slate-500">{description}</p>
         </div>
         <div className="flex items-center gap-3">
           {onEnabledChange ? (
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-                enabled ? "bg-emerald-500/90" : "bg-slate-700"
+                enabled ? "bg-emerald-500" : "bg-slate-300"
               }`}
               onClick={(event) => {
                 event.preventDefault();
@@ -49,7 +49,7 @@ export default function BiasToggle({
               }}
             >
               <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${enabled ? "translate-x-5" : "translate-x-1"}`}
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition ${enabled ? "translate-x-5" : "translate-x-1"}`}
               />
             </span>
           ) : null}
@@ -57,7 +57,7 @@ export default function BiasToggle({
         </div>
       </button>
 
-      {open ? <div className="border-t border-slate-800 px-4 py-4">{children}</div> : null}
+      {open ? <div className="border-t border-slate-200/40 px-4 py-4">{children}</div> : null}
     </div>
   );
 }

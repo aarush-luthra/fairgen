@@ -3,17 +3,20 @@ import BiasToggle from "./BiasToggle";
 import Tooltip from "./Tooltip";
 import { DEFAULT_CONFIG, TOOLTIP_COPY } from "../constants";
 
+const INPUT_TRACK = "rgba(16, 185, 129, 0.25)";
+const INPUT_FILL = "rgba(16, 185, 129, 0.7)";
+
 function sliderFill(value, min, max) {
   const percentage = ((value - min) / (max - min)) * 100;
-  return `linear-gradient(90deg, rgba(59,130,246,0.95) 0%, rgba(59,130,246,0.95) ${percentage}%, rgba(51,65,85,0.95) ${percentage}%, rgba(51,65,85,0.95) 100%)`;
+  return `linear-gradient(90deg, ${INPUT_FILL} 0%, ${INPUT_FILL} ${percentage}%, ${INPUT_TRACK} ${percentage}%, ${INPUT_TRACK} 100%)`;
 }
 
 function Slider({ label, value, min, max, step = 1, onChange, helper, disabled = false }) {
   return (
     <label className={`block ${disabled ? "opacity-50" : ""}`}>
-      <div className="mb-2 flex items-center justify-between text-sm text-slate-300">
-        <span>{label}</span>
-        <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-xs">{value}</span>
+      <div className="mb-2 flex items-center justify-between text-sm text-slate-600">
+        <span className="font-medium">{label}</span>
+        <span className="rounded-md border border-slate-200/60 bg-white/50 px-2 py-0.5 text-xs font-bold text-slate-700">{value}</span>
       </div>
       <input
         className="h-2 w-full cursor-pointer appearance-none rounded-full"
@@ -45,6 +48,8 @@ function representationEnabled(representation) {
   return representation.femalePct > 0 || representation.minorityPct > 0 || representation.ruralPct > 0;
 }
 
+const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,128,128,0.10)]";
+
 export default function ConfigPanel({
   config,
   schema,
@@ -67,21 +72,21 @@ export default function ConfigPanel({
   const hasRepresentationControls = showGenderSlider || showRaceSlider || showRuralSlider;
 
   return (
-    <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20">
+    <section className={CARD + " p-5"}>
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-100">Configuration</h2>
-          <p className="mt-1 text-sm text-slate-400">Tune the fairness controls, then generate a synthetic credit dataset.</p>
+          <h2 className="text-lg font-bold text-slate-800">Configuration</h2>
+          <p className="mt-1 text-sm text-slate-500">Tune the fairness controls, then generate a synthetic credit dataset.</p>
         </div>
-        <button className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-300 hover:bg-slate-800" onClick={onEditSchema}>
+        <button className="rounded-lg border border-slate-200/80 bg-white/50 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-white transition" onClick={onEditSchema}>
           Edit Schema
         </button>
       </div>
 
-      <div className="space-y-5">
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+      <div className="space-y-4">
+        <div className="rounded-xl bg-white/40 p-4 shadow-[0_2px_12px_rgba(0,128,128,0.06)]">
           <div className="mb-2 flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-200">Dataset size</span>
+            <span className="text-sm font-bold text-slate-700">Dataset size</span>
             <Tooltip text="Choose how many synthetic applicants to generate. Larger datasets take longer but provide stronger analysis and export value." />
           </div>
           <Slider
@@ -165,7 +170,7 @@ export default function ConfigPanel({
               ) : null}
             </div>
           ) : (
-            <p className="text-sm text-slate-400">No monitored demographic columns in this schema currently drive representation balancing.</p>
+            <p className="text-sm text-slate-500">No monitored demographic columns in this schema currently drive representation balancing.</p>
           )}
         </BiasToggle>
 
@@ -223,23 +228,23 @@ export default function ConfigPanel({
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <button
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 transition shadow-lg shadow-slate-900/20"
           onClick={onGenerate}
           disabled={busy}
         >
           {showGenerateSuccess ? <Check size={16} /> : null}
           {generateLabel}
         </button>
-        <button className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 hover:bg-slate-800" onClick={onReset}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onReset}>
           Reset to Defaults
         </button>
       </div>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <button className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 hover:bg-slate-800" onClick={onSaveConfig}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onSaveConfig}>
           Save Config
         </button>
-        <button className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 hover:bg-slate-800" onClick={onLoadConfig}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onLoadConfig}>
           Load Config
         </button>
       </div>
