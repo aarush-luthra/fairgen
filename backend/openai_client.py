@@ -6,10 +6,10 @@ from typing import Any
 
 from openai import OpenAI
 
-from schemas import FairGenConfig
+from schemas import de.biasConfig
 
 
-SYSTEM_PROMPT = """You are a fairness constraint interpreter for FairGen, a synthetic
+SYSTEM_PROMPT = """You are a fairness constraint interpreter for de.bias, a synthetic
 credit dataset generator. The user will describe a fairness requirement
 in plain English. Translate it into a JSON config delta.
 
@@ -40,7 +40,7 @@ Config schema you can modify:
 }
 Only include keys you want to change."""
 
-SCHEMA_SUGGESTION_PROMPT = """You are a dataset schema advisor for FairGen, a synthetic credit
+SCHEMA_SUGGESTION_PROMPT = """You are a dataset schema advisor for de.bias, a synthetic credit
 data generator. The user will describe their use case. You will
 suggest additional columns they should include in their dataset
 that they haven't already selected.
@@ -100,7 +100,7 @@ def test_connection() -> tuple[bool, str]:
         return False, str(exc)
 
 
-def interpret_fairness_prompt(instruction: str, current_config: FairGenConfig) -> dict[str, Any]:
+def interpret_fairness_prompt(instruction: str, current_config: de.biasConfig) -> dict[str, Any]:
     client = _client()
     response = client.chat.completions.create(
         model="gpt-4o-mini",

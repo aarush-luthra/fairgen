@@ -25,7 +25,7 @@ from schemas import (
     SuggestColumnsResponse,
 )
 
-app = FastAPI(title="FairGen API", version="0.2.0")
+app = FastAPI(title="de.bias API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,7 +77,7 @@ def _validate_schema(schema: list[SchemaColumn]) -> None:
     if not any(column.fairness_sensitive for column in schema):
         raise HTTPException(
             status_code=400,
-            detail="FairGen needs at least one protected attribute column (e.g. race, gender, age) to compute fairness metrics.",
+            detail="de.bias needs at least one protected attribute column (e.g. race, gender, age) to compute fairness metrics.",
         )
 
 
@@ -184,7 +184,7 @@ def export_huggingface(payload: ExportHuggingFaceRequest):
             api.upload_file(
                 repo_id=payload.repoName,
                 repo_type="dataset",
-                path_in_repo="fairgen_dataset.csv",
+                path_in_repo="de.bias_dataset.csv",
                 path_or_fileobj=buffer,
             )
 
@@ -196,4 +196,4 @@ def export_huggingface(payload: ExportHuggingFaceRequest):
 
 @app.get("/")
 def root():
-    return {"name": "FairGen API", "status": "running"}
+    return {"name": "de.bias API", "status": "running"}

@@ -35,7 +35,7 @@ export const TOOLTIP_COPY = {
   labelBias:
     "Label bias happens when similar applicants get different approval labels because of human bias. This control repairs unfair outcomes near the approval boundary.",
   measurementBias:
-    "Measurement bias means some groups have noisier or less reliable financial data. FairGen applies the same noise pattern to everyone instead.",
+    "Measurement bias means some groups have noisier or less reliable financial data. de.bias applies the same noise pattern to everyone instead.",
   dpd:
     "Demographic Parity Difference shows the size of the approval-rate gap between monitored groups. Lower is better.",
   dir:

@@ -1,6 +1,6 @@
-# FairGen
+# de.bias
 
-FairGen is an open-source web application for generating synthetic credit datasets with configurable bias mitigation layers and fairness reporting.
+de.bias is an open-source web application for generating synthetic credit datasets with configurable bias mitigation layers and fairness reporting.
 
 Generate synthetic credit data. Remove bias. Build fairer AI.
 
@@ -71,7 +71,7 @@ Optional for HuggingFace export at runtime:
 ## Structure
 
 ```
-fairgen/
+de.bias/
 ├── frontend/     # React + Vite app
 ├── backend/      # FastAPI backend
 ├── docs/         # Architecture and phase docs
@@ -87,4 +87,4 @@ fairgen/
 | [MOSTLY AI](https://github.com/mostly-ai/mostlyai) | Seed-based conditional generation concept | Apache 2.0 |
 | [LLM-Dataset-Builder](https://github.com/dmeldrum6/LLM-Dataset-Builder) | Save/load config + API test UX | MIT |
 
-FairGen's bias mitigation engine, fairness metrics, GPT-4o mini integration, and visual fairness reporting are original contributions not present in the above projects.
+de.bias's bias mitigation engine, fairness metrics, GPT-4o mini integration, and visual fairness reporting are original contributions not present in the above projects.

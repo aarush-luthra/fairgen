@@ -1,11 +1,11 @@
-# FairGen Architecture
+# de.bias Architecture
 
 ## System Flow
 
 1. React frontend captures configuration and AI fairness instructions.
 2. FastAPI backend generates a seed credit dataset.
 3. SDV synthesizes correlated synthetic records.
-4. FairGen bias mitigation layers transform the dataset in order.
+4. de.bias bias mitigation layers transform the dataset in order.
 5. Fairness metrics are computed for raw and mitigated outputs.
 6. The frontend renders tables, charts, reports, and export actions.
 

@@ -241,7 +241,7 @@ export default function App() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "fairgen-config.json";
+    anchor.download = "de.bias-config.json";
     anchor.click();
     URL.revokeObjectURL(url);
     setPersistState("Config and schema saved as JSON");
@@ -315,7 +315,7 @@ export default function App() {
       return "Select at least one monitored demographic column, one financial column, and the required loan_approved outcome before continuing.";
     }
     if (!hasSensitive) {
-      return "FairGen needs at least one protected attribute column (e.g. race, gender, age) to compute fairness metrics.";
+      return "de.bias needs at least one protected attribute column (e.g. race, gender, age) to compute fairness metrics.";
     }
     return "";
   }
@@ -412,7 +412,7 @@ export default function App() {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-300">FairGen</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-300">de.bias</p>
               <p className="mt-1 truncate text-sm text-slate-300">Schema Builder → Configuration → Generate → Preview + Report</p>
             </div>
             {result ? (
@@ -459,7 +459,7 @@ export default function App() {
             Build the exact credit dataset schema you need, then stress-test it for bias.
           </h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-300">
-            Choose your own columns, monitor protected attributes, and let FairGen generate a synthetic dataset with fairness metrics that adapt to your schema.
+            Choose your own columns, monitor protected attributes, and let de.bias generate a synthetic dataset with fairness metrics that adapt to your schema.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {FAIRNESS_BADGES.map((badge) => (
@@ -550,7 +550,7 @@ export default function App() {
 
             <section className="space-y-6">
               <div className="rounded-3xl border border-amber-500/20 bg-amber-500/10 p-4">
-                <p className="text-sm font-semibold text-amber-100">⚠️ FairGen will monitor these columns for bias:</p>
+                <p className="text-sm font-semibold text-amber-100">⚠️ de.bias will monitor these columns for bias:</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {monitoredColumns.map((column) => (
                     <span key={column.name} className="rounded-full border border-amber-400/30 bg-slate-950/40 px-3 py-1 text-xs text-amber-100">
@@ -635,7 +635,7 @@ export default function App() {
             <div className="mt-4 overflow-hidden rounded-full bg-slate-800">
               <div className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-300" style={{ width: `${statusProgress}%` }} />
             </div>
-            <p className="mt-3 text-sm text-slate-400">FairGen is generating, correcting, and scoring the dataset.</p>
+            <p className="mt-3 text-sm text-slate-400">de.bias is generating, correcting, and scoring the dataset.</p>
             <button
               className="mt-5 rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
               onClick={handleStopGeneration}
@@ -651,7 +651,7 @@ export default function App() {
           <div className="w-full max-w-2xl rounded-[2rem] border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-slate-950/40">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-300">How FairGen works</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-300">How de.bias works</p>
                 <h2 className="mt-2 text-2xl font-semibold text-slate-100">Three quick steps</h2>
               </div>
               <button className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300 hover:bg-slate-800" onClick={() => setShowHelpModal(false)}>
@@ -661,7 +661,7 @@ export default function App() {
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
                 <p className="text-sm font-semibold text-slate-100">1. Build your schema</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Pick the columns your use case needs and mark the protected attributes FairGen should monitor.</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Pick the columns your use case needs and mark the protected attributes de.bias should monitor.</p>
               </div>
               <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
                 <p className="text-sm font-semibold text-slate-100">2. Tune the bias controls</p>

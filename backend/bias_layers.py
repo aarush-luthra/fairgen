@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from schema_catalog import DEFAULT_SENSITIVE_COLUMNS, FEMALE_VALUES, FINANCIAL_SIGNAL_COLUMNS, MINORITY_VALUES, RURAL_VALUES
-from schemas import FairGenConfig, SchemaColumn
+from schemas import de.biasConfig, SchemaColumn
 
 
 def _column_map(schema: list[SchemaColumn]) -> dict[str, SchemaColumn]:
@@ -129,7 +129,7 @@ def _rebalance_minimum(df: pd.DataFrame, mask: pd.Series, target_pct: float, sch
     return combined.sample(n=len(df), replace=False, random_state=17).reset_index(drop=True)
 
 
-def apply_representation_bias(df: pd.DataFrame, config: FairGenConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
+def apply_representation_bias(df: pd.DataFrame, config: de.biasConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
     adjusted = df.copy()
     rng = np.random.default_rng(21)
     available = {column.name for column in schema}
@@ -204,7 +204,7 @@ def apply_label_bias(df: pd.DataFrame, ratio: float, schema: list[SchemaColumn])
     return adjusted
 
 
-def apply_measurement_bias(df: pd.DataFrame, config: FairGenConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
+def apply_measurement_bias(df: pd.DataFrame, config: de.biasConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
     if not config.measurementNoise.enabled:
         return df
 
@@ -240,7 +240,7 @@ def create_biased_baseline(df: pd.DataFrame, schema: list[SchemaColumn]) -> pd.D
     return apply_historical_bias(df, correction=0, schema=schema)
 
 
-def apply_bias_pipeline(df: pd.DataFrame, config: FairGenConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
+def apply_bias_pipeline(df: pd.DataFrame, config: de.biasConfig, schema: list[SchemaColumn]) -> pd.DataFrame:
     adjusted = apply_representation_bias(df, config, schema)
     adjusted = apply_historical_bias(adjusted, config.historicalCorrection, schema)
     adjusted = apply_label_bias(adjusted, config.labelCorrection, schema)

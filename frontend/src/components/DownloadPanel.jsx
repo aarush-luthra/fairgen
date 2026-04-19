@@ -25,14 +25,14 @@ export default function DownloadPanel({ config, result }) {
     }
     const headers = Object.keys(dataset[0]);
     const rows = dataset.map((row) => headers.map((header) => JSON.stringify(row[header] ?? "")).join(","));
-    downloadFile("fairgen_dataset.csv", [headers.join(","), ...rows].join("\n"), "text/csv");
+    downloadFile("de.bias_dataset.csv", [headers.join(","), ...rows].join("\n"), "text/csv");
   }
 
   function handleJson() {
     if (!result) {
       return;
     }
-    downloadFile("fairgen_report.json", JSON.stringify(result, null, 2), "application/json");
+    downloadFile("de.bias_report.json", JSON.stringify(result, null, 2), "application/json");
   }
 
   function handleShare() {
@@ -84,7 +84,7 @@ export default function DownloadPanel({ config, result }) {
         />
         <input
           className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none"
-          placeholder="Repo name, e.g. username/fairgen-demo"
+          placeholder="Repo name, e.g. username/de.bias-demo"
           value={repoName}
           onChange={(event) => setRepoName(event.target.value)}
         />

@@ -8,7 +8,7 @@ export default function AIPromptBox({ onApply, onTestConnection, apiStatus, aiEx
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-slate-100">AI Constraint Box</h2>
         <p className="mt-1 text-sm text-slate-300">
-          Describe a fairness requirement in plain English and FairGen will translate it into a config change.
+          Describe a fairness requirement in plain English and de.bias will translate it into a config change.
         </p>
       </div>
 

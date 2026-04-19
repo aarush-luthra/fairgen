@@ -1,4 +1,4 @@
-# FairGen Project Brief
+# de.bias Project Brief
 
 ## Vision
 
