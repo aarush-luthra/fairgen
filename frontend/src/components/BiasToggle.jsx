@@ -14,7 +14,7 @@ export default function BiasToggle({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="rounded-xl bg-white/40 transition shadow-[0_2px_12px_rgba(0,128,128,0.06)]">
+    <div className="rounded-xl bg-white/40 transition shadow-[0_2px_12px_rgba(0,100,100,0.14)]">
       <button
         className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left"
         onClick={() => setOpen((value) => !value)}

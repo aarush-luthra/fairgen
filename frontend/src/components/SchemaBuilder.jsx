@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { GripVertical, Plus, Sparkles, Trash2, ChevronDown } from "lucide-react";
 import { SCHEMA_CATEGORY_ORDER, SCHEMA_PRESETS, buildSchemaColumn } from "../constants";
 
-const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,128,128,0.10)]";
+const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,100,100,0.22)]";
 const INPUT = "w-full rounded-lg border border-slate-200/60 bg-white/60 px-2.5 py-1.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 transition";
 const LABEL = "mb-1 block text-[11px] uppercase tracking-wider text-slate-500 font-bold";
 
@@ -56,7 +56,7 @@ function PresetPicker({ schema, onToggle, searchQuery, onSearchChange }) {
                 <label
                   key={name}
                   className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition text-sm ${
-                    selectedNames.has(name) ? "bg-teal-50/50 shadow-[0_0_0_1px_rgba(0,128,128,0.12)]" : "hover:bg-white/40"
+                    selectedNames.has(name) ? "bg-teal-50/50 shadow-[0_0_0_1px_rgba(0,100,100,0.20)]" : "hover:bg-white/40"
                   }`}
                 >
                   <input
@@ -174,7 +174,7 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
 
   return (
     <article
-      className={`rounded-xl transition-all ${open ? 'bg-teal-50/30 shadow-[0_2px_16px_rgba(0,128,128,0.10)]' : 'bg-white/30 hover:bg-white/50 shadow-[0_1px_8px_rgba(0,128,128,0.06)]'}`}
+      className={`rounded-xl transition-all ${open ? 'bg-teal-50/30 shadow-[0_2px_16px_rgba(0,100,100,0.22)]' : 'bg-white/30 hover:bg-white/50 shadow-[0_1px_8px_rgba(0,100,100,0.14)]'}`}
       draggable={!locked}
       onDragStart={() => onDragStart(index)}
       onDragOver={(event) => {

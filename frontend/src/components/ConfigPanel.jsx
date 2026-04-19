@@ -48,7 +48,7 @@ function representationEnabled(representation) {
   return representation.femalePct > 0 || representation.minorityPct > 0 || representation.ruralPct > 0;
 }
 
-const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,128,128,0.10)]";
+const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,100,100,0.22)]";
 
 export default function ConfigPanel({
   config,
@@ -84,7 +84,7 @@ export default function ConfigPanel({
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-xl bg-white/40 p-4 shadow-[0_2px_12px_rgba(0,128,128,0.06)]">
+        <div className="rounded-xl bg-white/40 p-4 shadow-[0_2px_12px_rgba(0,100,100,0.14)]">
           <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-bold text-slate-700">Dataset size</span>
             <Tooltip text="Choose how many synthetic applicants to generate. Larger datasets take longer but provide stronger analysis and export value." />
@@ -235,16 +235,16 @@ export default function ConfigPanel({
           {showGenerateSuccess ? <Check size={16} /> : null}
           {generateLabel}
         </button>
-        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onReset}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={onReset}>
           Reset to Defaults
         </button>
       </div>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onSaveConfig}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={onSaveConfig}>
           Save Config
         </button>
-        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,128,128,0.06)]" onClick={onLoadConfig}>
+        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={onLoadConfig}>
           Load Config
         </button>
       </div>
