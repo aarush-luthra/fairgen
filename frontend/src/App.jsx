@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { ArrowRight, Check, CircleHelp, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import AIPromptBox from "./components/AIPromptBox";
 import ConfigPanel from "./components/ConfigPanel";
@@ -132,6 +133,21 @@ export default function App() {
   const fileInputRef = useRef(null);
   const lastRequestedConfigRef = useRef(DEFAULT_CONFIG);
   const successTimeoutRef = useRef(null);
+  const [user, setUser] = useState(null);
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfo = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        }).then(res => res.json());
+        setUser(userInfo);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    },
+    onError: () => console.error("Login Failed"),
+  });
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -426,9 +442,11 @@ export default function App() {
         result={result}
         loading={loading}
         step={step}
+        user={user}
         statusProgress={statusProgress}
         onEditSchema={() => setStep("schema")}
         onSetActiveTab={setActiveTab}
+        onLogin={() => googleLogin()}
       />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-32">
         <AnimatePresence>
@@ -589,6 +607,7 @@ export default function App() {
 
       <Footer 
         onLoadDemo={handleDemoScenario}
+        onLogin={() => googleLogin()}
       />
 
       <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleLoadConfigFile} />

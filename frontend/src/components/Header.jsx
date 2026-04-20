@@ -8,11 +8,13 @@ export default function Header({
   result, 
   loading, 
   step, 
+  user,
   statusProgress,
   onShowHelp, 
   onLoadDemo, 
   onEditSchema,
-  onSetActiveTab
+  onSetActiveTab,
+  onLogin
 }) {
   const isConfig = step === "config";
   const [isVisible, setIsVisible] = useState(true);
@@ -93,8 +95,15 @@ export default function Header({
 
             {/* Right Actions */}
             <div className="flex items-center gap-4">
-              <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-90">
-                <User size={18} className="text-slate-400" />
+              <button 
+                onClick={onLogin}
+                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-90"
+              >
+                {user ? (
+                  <img src={user.picture} alt={user.name} className="h-full w-full object-cover" />
+                ) : (
+                  <User size={18} className="text-slate-400" />
+                )}
               </button>
               
               <button 

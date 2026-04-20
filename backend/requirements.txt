@@ -8,3 +8,5 @@ datasets>=2.20.0
 huggingface_hub>=0.24.0
 sdv>=1.17.0
 python-dotenv>=1.0.1
+gspread>=6.0.0
+google-auth>=2.28.0

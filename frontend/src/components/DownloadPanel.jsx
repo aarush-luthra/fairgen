@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
 
-import { exportToHuggingFace } from "../api/export";
+import { exportToHuggingFace, exportToGoogleSheets } from "../api/export";
 
 function downloadFile(name, contents, type) {
   const blob = new Blob([contents], { type });
@@ -17,6 +18,7 @@ export default function DownloadPanel({ config, result }) {
   const [repoName, setRepoName] = useState("");
   const [shareState, setShareState] = useState("");
   const [exportState, setExportState] = useState("");
+  const [googleExportState, setGoogleExportState] = useState("");
   const dataset = result?.dataset || [];
 
   function handleCsv() {
@@ -56,6 +58,29 @@ export default function DownloadPanel({ config, result }) {
     }
   }
 
+  const login = useGoogleLogin({
+    scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file",
+    onSuccess: async (tokenResponse) => {
+      setGoogleExportState("Pushing dataset to Google Sheets...");
+      try {
+        const response = await exportToGoogleSheets(dataset, tokenResponse.access_token);
+        setGoogleExportState(`Published: ${response.url}`);
+        window.open(response.url, "_blank");
+      } catch (error) {
+        setGoogleExportState(error.message);
+      }
+    },
+    onError: () => setGoogleExportState("Google Login Failed"),
+  });
+
+  async function handleGoogleExport() {
+    if (!dataset.length) {
+      setGoogleExportState("Add a generated dataset first.");
+      return;
+    }
+    login();
+  }
+
   return (
     <section className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-5 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
       <div className="mb-4">
@@ -93,8 +118,15 @@ export default function DownloadPanel({ config, result }) {
         </button>
       </div>
 
+      <div className="mt-5 flex gap-3">
+        <button className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onClick={handleGoogleExport}>
+          Sign in with Google to Export to Sheets
+        </button>
+      </div>
+
       {shareState ? <p className="mt-3 text-sm font-medium text-emerald-600">{shareState}</p> : null}
       {exportState ? <p className="mt-2 break-all text-sm text-slate-500">{exportState}</p> : null}
+      {googleExportState ? <p className="mt-2 break-all text-sm text-slate-500">{googleExportState}</p> : null}
     </section>
   );
 }
