@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
@@ -95,6 +97,13 @@ class ExportHuggingFaceRequest(BaseModel):
 class ExportGoogleSheetsRequest(BaseModel):
     dataset: list[dict[str, Any]]
     accessToken: str = Field(min_length=1)
+
+
+class ModelEvalRequest(BaseModel):
+    """Request body for POST /model/evaluate."""
+    dataset: list[dict[str, Any]]        # after-mitigation records
+    beforeDataset: list[dict[str, Any]]  # biased baseline records
+    schema: list[SchemaColumn]
 
 
 class APIConnectionStatus(BaseModel):

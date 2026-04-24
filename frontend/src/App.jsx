@@ -15,6 +15,7 @@ import Layout from "./components/Layout";
 import PretextHero from "./components/PretextHero";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import VertexPanel from "./components/VertexPanel";
 import { MotionWrapper, StaggerWrapper } from "./components/MotionWrapper";
 
 import { generateDataset } from "./api/generate";
@@ -231,8 +232,8 @@ export default function App() {
     try {
       const response = await testApiConnection();
       setApiStatus({
-        connected: response.openaiConnected,
-        message: response.openaiMessage || (response.openaiConnected ? "Connected" : "Connection failed"),
+        connected: response.geminiConnected,
+        message: response.geminiMessage || (response.geminiConnected ? "Connected" : "Connection failed"),
       });
     } catch (error) {
       setApiStatus({ connected: false, message: error.message || "Connection failed" });
@@ -419,7 +420,7 @@ export default function App() {
     () => ({
       table: <DataTable rows={result?.dataset || []} schema={schema} />,
       charts: <DistributionCharts charts={result?.charts} />,
-      report: <FairnessReport metrics={result?.metrics} fairnessReport={result?.fairnessReport} beforeMetrics={result?.beforeMetrics} />,
+      report: <FairnessReport metrics={result?.metrics} fairnessReport={result?.fairnessReport} beforeMetrics={result?.beforeMetrics} geminiNarrative={result?.geminiNarrative} />,
     }),
     [result, schema],
   );
@@ -574,6 +575,8 @@ export default function App() {
                   </div>
 
                   <DownloadPanel config={{ ...config, schema }} result={result} />
+
+                  <VertexPanel result={result} schema={schema} />
                 </div>
               </motion.div>
             )}

@@ -1,6 +1,5 @@
 import io
 import os
-import time
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -10,21 +9,23 @@ from fastapi.responses import JSONResponse
 
 load_dotenv()
 
-from bias_layers import apply_bias_pipeline, create_biased_baseline
-from fairness import build_distribution_summary, build_metric_cards, compute_fairness_metrics, monitored_columns
-from generator import SDV_AVAILABLE, SDV_VERSION, sample_base_dataset
-from openai_client import interpret_fairness_prompt, suggest_schema_columns, test_connection
+from firestore_client import list_sessions, load_session
+from gemini_client import interpret_fairness_prompt, suggest_schema_columns, test_connection
+from generator import SDV_AVAILABLE, SDV_VERSION
+from pipeline import run_pipeline, serialize_result
+from vertex_trainer import evaluate_model_fairness
 from schemas import (
     ExportGoogleSheetsRequest,
     ExportHuggingFaceRequest,
     GenerateRequest,
+    ModelEvalRequest,
     PromptRequest,
     SchemaColumn,
     SuggestColumnsRequest,
     SuggestColumnsResponse,
 )
 
-app = FastAPI(title="de.bias API", version="0.2.0")
+app = FastAPI(title="de.bias API", version="0.3.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,110 +39,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     import traceback
-    # Print traceback to server logs for debugging
     traceback.print_exc()
     return JSONResponse(
         status_code=500,
-        content={
-            "detail": "Internal Server Error",
-            "message": str(exc),
-        },
+        content={"detail": "Internal Server Error", "message": str(exc)},
         headers={
             "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
             "Access-Control-Allow-Credentials": "true",
-        }
+        },
     )
 
 
-LOADING_MESSAGES = [
-    "Fitting SDV synthesizer...",
-    "Sampling base records...",
-    "Applying historical bias correction...",
-    "Enforcing representation constraints...",
-    "Correcting label bias...",
-    "Injecting measurement noise parity...",
-    "Computing fairness metrics...",
-]
-
+# ---------------------------------------------------------------------------
+# Schema validation — HTTP concern (raises HTTPException), stays in main.py
+# ---------------------------------------------------------------------------
 
 def _validate_schema(schema: list[SchemaColumn]) -> None:
-    names = [column.name for column in schema]
+    names = [c.name for c in schema]
     if len(set(names)) != len(names):
         raise HTTPException(status_code=400, detail="Schema column names must be unique.")
     if "loan_approved" not in names:
         raise HTTPException(status_code=400, detail="Schema must include the required loan_approved outcome column.")
-    if not any(column.fairness_sensitive for column in schema):
+    if not any(c.fairness_sensitive for c in schema):
         raise HTTPException(
             status_code=400,
             detail="de.bias needs at least one protected attribute column (e.g. race, gender, age) to compute fairness metrics.",
         )
 
 
-def _build_generation_response(payload: GenerateRequest) -> dict:
-    _validate_schema(payload.schema)
-    started = time.perf_counter()
-    artifacts = sample_base_dataset(payload.config, payload.schema)
-    base_df = artifacts.base_dataset.copy()
-
-    if "approval_score" not in base_df.columns:
-        base_df["approval_score"] = 0.5
-    if "loan_approved" not in base_df.columns:
-        base_df["loan_approved"] = False
-
-    before_df = create_biased_baseline(base_df, payload.schema)
-    after_df = apply_bias_pipeline(base_df, payload.config, payload.schema)
-
-    before_metrics = compute_fairness_metrics(before_df, payload.schema)
-    after_metrics = compute_fairness_metrics(after_df, payload.schema)
-    generation_time_ms = round((time.perf_counter() - started) * 1000, 1)
-    output_columns = [column.name for column in payload.schema]
-    monitored = [column.name for column in monitored_columns(payload.schema)]
-
-    # Sanitize dataset for JSON serialization (remove NaN/Inf)
-    clean_df = after_df.reindex(columns=output_columns).copy()
-    clean_df = clean_df.replace([float('inf'), float('-inf')], 0).fillna(0)
-    
-    return {
-        "dataset": clean_df.to_dict(orient="records"),
-        "metrics": after_metrics,
-        "beforeMetrics": before_metrics,
-        "fairnessReport": {
-            "overallScore": after_metrics["OFS"],
-            "metricCards": build_metric_cards(after_metrics),
-            "beforeCards": build_metric_cards(before_metrics),
-        },
-        "charts": {
-            "before": build_distribution_summary(before_df, payload.schema),
-            "after": build_distribution_summary(after_df, payload.schema),
-        },
-        "generationTimeMs": generation_time_ms,
-        "generationTimeSeconds": round(generation_time_ms / 1000, 2),
-        "sdvVersion": SDV_VERSION,
-        "generatorSource": artifacts.source,
-        "loadingMessages": LOADING_MESSAGES + [f"Done ✓ — Generated in {round(generation_time_ms / 1000, 2)}s"],
-        "monitoredColumns": monitored,
-        "schema": [column.model_dump() for column in payload.schema],
-    }
-
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
 
 @app.get("/health")
 def health():
-    connected, message = test_connection() if os.getenv("OPENAI_API_KEY") else (False, "OPENAI_API_KEY not configured")
+    has_creds = bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GOOGLE_CLOUD_PROJECT"))
+    connected, message = (
+        test_connection() if has_creds
+        else (False, "No credentials — set GOOGLE_API_KEY or GOOGLE_CLOUD_PROJECT")
+    )
     return {
         "status": "ok",
         "sdvVersion": SDV_VERSION,
         "sdvAvailable": SDV_AVAILABLE,
-        "openaiConnected": connected,
-        "openaiMessage": message,
+        "geminiConnected": connected,
+        "geminiMessage": message,
+        "authMode": "adc" if os.getenv("GOOGLE_CLOUD_PROJECT") else "apikey",
     }
 
 
 @app.post("/generate")
 def generate(payload: GenerateRequest):
-    return _build_generation_response(payload)
+    _validate_schema(payload.schema)
+    result = run_pipeline(payload.schema, payload.config)
+    return serialize_result(result)
 
 
 @app.post("/suggest-columns", response_model=SuggestColumnsResponse)
@@ -163,6 +118,43 @@ def prompt(payload: PromptRequest):
         raise HTTPException(status_code=500, detail=f"Prompt interpretation failed: {exc}") from exc
 
 
+@app.post("/model/evaluate")
+def model_evaluate(payload: ModelEvalRequest):
+    try:
+        return evaluate_model_fairness(
+            before_df_records=payload.beforeDataset,
+            after_df_records=payload.dataset,
+            schema=payload.schema,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Model evaluation failed: {exc}") from exc
+
+
+@app.get("/sessions")
+def get_sessions(limit: int = 10):
+    try:
+        return {"sessions": list_sessions(limit=limit)}
+    except RuntimeError:
+        return {"sessions": [], "note": "Firestore not configured (GOOGLE_CLOUD_PROJECT unset)"}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.get("/sessions/{session_id}")
+def get_session(session_id: str):
+    try:
+        session = load_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        return session
+    except HTTPException:
+        raise
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="Firestore not configured")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
 @app.post("/export/huggingface")
 def export_huggingface(payload: ExportHuggingFaceRequest):
     try:
@@ -176,7 +168,6 @@ def export_huggingface(payload: ExportHuggingFaceRequest):
         dataset = Dataset.from_pandas(df)
         api = HfApi(token=payload.hfToken)
         api.create_repo(repo_id=payload.repoName, repo_type="dataset", exist_ok=True)
-
         with io.BytesIO() as buffer:
             df.to_csv(buffer, index=False)
             buffer.seek(0)
@@ -186,7 +177,6 @@ def export_huggingface(payload: ExportHuggingFaceRequest):
                 path_in_repo="de.bias_dataset.csv",
                 path_or_fileobj=buffer,
             )
-
         dataset.push_to_hub(payload.repoName, token=payload.hfToken)
         return {"url": f"https://huggingface.co/datasets/{payload.repoName}"}
     except Exception as exc:
@@ -204,32 +194,19 @@ def export_googlesheets(payload: ExportGoogleSheetsRequest):
     try:
         credentials = Credentials(token=payload.accessToken)
         client = gspread.authorize(credentials)
-
         from datetime import datetime
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        sheet_title = f"de.bias Export - {timestamp}"
-        
-        spreadsheet = client.create(sheet_title)
-        worksheet = spreadsheet.sheet1
-
+        spreadsheet = client.create(f"de.bias Export - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         if not payload.dataset:
             return {"url": spreadsheet.url}
-
-        df = pd.DataFrame(payload.dataset)
-        df = df.replace([float('inf'), float('-inf')], 0).fillna("")
-        
-        headers = df.columns.tolist()
-        data = [headers] + df.values.tolist()
-
-        worksheet.update(data)
+        df = pd.DataFrame(payload.dataset).replace([float("inf"), float("-inf")], 0).fillna("")
+        spreadsheet.sheet1.update([df.columns.tolist()] + df.values.tolist())
         return {"url": spreadsheet.url}
     except gspread.exceptions.APIError as exc:
-        raise HTTPException(status_code=403, detail=f"Google API Error: Check if token is valid. {exc}") from exc
+        raise HTTPException(status_code=403, detail=f"Google API Error: {exc}") from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Google Sheets Export failed: {exc}") from exc
-
+        raise HTTPException(status_code=500, detail=f"Google Sheets export failed: {exc}") from exc
 
 
 @app.get("/")
 def root():
-    return {"name": "de.bias API", "status": "running"}
+    return {"name": "de.bias API", "version": "0.3.0", "status": "running", "ai": "Gemini 1.5 Flash"}
