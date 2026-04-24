@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function Footer({ onLoadDemo }) {
+export default function Footer({ onLoadDemo, onLogin }) {
   return (
     <footer className="mx-6 mb-6 mt-32 overflow-hidden rounded-[4rem] bg-slate-900 px-12 pb-12 pt-20 text-white selection:bg-white selection:text-slate-900">
       <div className="mx-auto max-w-7xl">
@@ -29,7 +29,7 @@ export default function Footer({ onLoadDemo }) {
           </div>
 
           <div className="text-right">
-            <button className="text-sm font-bold uppercase tracking-widest hover:underline">Log in</button>
+            <button onClick={onLogin} className="text-sm font-bold uppercase tracking-widest hover:underline">Log in</button>
           </div>
         </div>
 

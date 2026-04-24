@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import io
 import os
 import time
@@ -17,6 +15,7 @@ from fairness import build_distribution_summary, build_metric_cards, compute_fai
 from generator import SDV_AVAILABLE, SDV_VERSION, sample_base_dataset
 from openai_client import interpret_fairness_prompt, suggest_schema_columns, test_connection
 from schemas import (
+    ExportGoogleSheetsRequest,
     ExportHuggingFaceRequest,
     GenerateRequest,
     PromptRequest,
@@ -192,6 +191,43 @@ def export_huggingface(payload: ExportHuggingFaceRequest):
         return {"url": f"https://huggingface.co/datasets/{payload.repoName}"}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Export failed: {exc}") from exc
+
+
+@app.post("/export/googlesheets")
+def export_googlesheets(payload: ExportGoogleSheetsRequest):
+    try:
+        import gspread
+        from google.oauth2.credentials import Credentials
+    except ImportError as exc:
+        raise HTTPException(status_code=500, detail=f"Google Sheets dependencies unavailable: {exc}") from exc
+
+    try:
+        credentials = Credentials(token=payload.accessToken)
+        client = gspread.authorize(credentials)
+
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sheet_title = f"de.bias Export - {timestamp}"
+        
+        spreadsheet = client.create(sheet_title)
+        worksheet = spreadsheet.sheet1
+
+        if not payload.dataset:
+            return {"url": spreadsheet.url}
+
+        df = pd.DataFrame(payload.dataset)
+        df = df.replace([float('inf'), float('-inf')], 0).fillna("")
+        
+        headers = df.columns.tolist()
+        data = [headers] + df.values.tolist()
+
+        worksheet.update(data)
+        return {"url": spreadsheet.url}
+    except gspread.exceptions.APIError as exc:
+        raise HTTPException(status_code=403, detail=f"Google API Error: Check if token is valid. {exc}") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Google Sheets Export failed: {exc}") from exc
+
 
 
 @app.get("/")
