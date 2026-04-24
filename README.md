@@ -4,7 +4,7 @@
 
 de.bias is a Google Cloud-native fairness engineering platform for synthetic credit datasets. It generates realistic lending data, applies a four-layer bias mitigation pipeline, evaluates fairness at both the **data level** and the **model level**, and produces Gemini-authored compliance reports — all in a single pipeline.
 
-Built for [Google × MLB Hackathon 2025](https://googlehackathon.devpost.com/).
+
 
 ---
 
