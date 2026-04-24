@@ -108,7 +108,7 @@ export default function Header({
               
               <button 
                 onClick={isConfig ? onEditSchema : onLoadDemo}
-                className="rounded-full bg-white border border-slate-200 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 transition active:scale-95"
+              className="hidden sm:flex rounded-full bg-white border border-slate-200 px-4 sm:px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 transition active:scale-95"
               >
                 {isConfig ? "Edit Schema" : "Load Demo"}
               </button>

@@ -54,7 +54,7 @@ export default function AIPromptBox({ onApply, onTestConnection, apiStatus, aiEx
             apiStatus.connected ? "bg-emerald-100 text-emerald-700" : "bg-red-50 text-red-600"
           }`}
         >
-          {apiStatus.connected ? "Gemini Connected ✓" : "Not connected ✗"} {apiStatus.message}
+          {apiStatus.connected ? "Gemini Connected" : "Not connected"} {apiStatus.message}
         </span>
       </div>
 

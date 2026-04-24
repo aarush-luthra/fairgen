@@ -92,8 +92,8 @@ function SuggestionPanel({ onSuggest, loading, suggestions, onAddSuggestion, onA
     <section className={CARD + " p-4"}>
       <button className="flex w-full items-center justify-between text-left" onClick={() => setOpen((value) => !value)}>
         <div>
-          <p className="text-sm font-bold text-slate-800">🤖 Ask AI to suggest columns</p>
-          <p className="mt-0.5 text-xs text-slate-500">GPT-4o mini for fairness-oriented schema ideas.</p>
+          <p className="text-sm font-bold text-slate-800">Ask Gemini to suggest columns</p>
+          <p className="mt-0.5 text-xs text-slate-500">Gemini 1.5 Flash for fairness-oriented schema ideas.</p>
         </div>
         <span className="text-xs font-bold text-slate-500 bg-white/60 border border-slate-200/60 px-2 py-1 rounded-md">{open ? "Hide" : "Open"}</span>
       </button>
@@ -210,7 +210,7 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
 
       {open && (
         <div className="border-t border-slate-200/60 px-3 py-3 space-y-3">
-          <div className="grid grid-cols-[1fr_120px_auto] gap-2 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px_auto] gap-3 sm:gap-2 sm:items-end">
             <label className="block">
               <span className={LABEL}>Name</span>
               <input value={column.name} disabled={locked} onChange={(e) => onChange({ ...column, name: e.target.value.replace(/\s+/g, "_") })} className={INPUT} />
@@ -230,7 +230,7 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
           </div>
 
           {numerical && (
-            <div className="grid grid-cols-4 gap-2 items-end">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 items-end">
               <label className="block"><span className={LABEL}>Min</span><input type="number" value={column.config.min ?? ""} onChange={(e) => updateConfig({ min: Number(e.target.value) })} className={INPUT} /></label>
               <label className="block"><span className={LABEL}>Max</span><input type="number" value={column.config.max ?? ""} onChange={(e) => updateConfig({ max: Number(e.target.value) })} className={INPUT} /></label>
               <label className="block"><span className={LABEL}>Dist.</span>
@@ -254,7 +254,7 @@ function SchemaColumnCard({ column, onChange, onRemove, locked, index, onDragSta
                 <div key={`${column.name}-${oi}`} className="grid grid-cols-[1fr_80px_auto] gap-1.5">
                   <input value={option} onChange={(e) => { const next = [...options]; next[oi] = e.target.value; updateConfig({ options: next }); }} className={INPUT} />
                   <input type="number" step="0.01" value={weights[oi] ?? ""} onChange={(e) => { const next = [...weights]; next[oi] = Number(e.target.value); updateConfig({ weights: next }); }} className={INPUT} />
-                  <button className="rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-red-50 hover:text-red-400 transition font-bold" onClick={() => { updateConfig({ options: options.filter((_, i) => i !== oi), weights: weights.filter((_, i) => i !== oi) }); }}>✕</button>
+                  <button className="rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-red-50 hover:text-red-400 transition font-bold" onClick={() => { updateConfig({ options: options.filter((_, i) => i !== oi), weights: weights.filter((_, i) => i !== oi) }); }}>x</button>
                 </div>
               ))}
               <button className="rounded-md border border-slate-200/80 bg-white/50 px-2.5 py-1 text-xs font-semibold text-slate-500 hover:bg-white transition" onClick={() => updateConfig({ options: [...options, `option_${options.length + 1}`], weights: [...weights, 1] })}>+ Add option</button>
@@ -331,7 +331,7 @@ export default function SchemaBuilder({
           ) : null}
 
           <button className="mt-4 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition active:scale-[0.98] shadow-lg shadow-slate-900/20" onClick={onProceed}>
-            Build My Dataset →
+            Build My Dataset
           </button>
         </div>
       </div>

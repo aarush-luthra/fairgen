@@ -449,7 +449,7 @@ export default function App() {
         onSetActiveTab={setActiveTab}
         onLogin={() => googleLogin()}
       />
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pb-24 pt-24 sm:pt-32">
         <AnimatePresence>
           {step === "schema" && (
             <motion.div
@@ -499,7 +499,7 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.4 }}
-                className="grid gap-12 xl:grid-cols-[380px_minmax(0,1fr)]"
+                className="grid gap-8 lg:grid-cols-[340px_minmax(0,1fr)] xl:grid-cols-[380px_minmax(0,1fr)]"
               >
                 <div className="space-y-8">
                   <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
@@ -538,7 +538,7 @@ export default function App() {
                   </AnimatePresence>
 
                   <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
-                    <div className="mb-8 grid gap-4 md:grid-cols-3">
+                    <div className="mb-6 grid gap-3 grid-cols-1 sm:grid-cols-3">
                       {TABS.map((tab, index) => {
                         const active = activeTab === tab.id;
                         return (

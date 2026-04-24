@@ -34,7 +34,7 @@ function DirBadge({ dir, label }) {
       <p className="mt-1.5 text-4xl font-bold">{dir.toFixed(3)}</p>
       <p className="mt-1 text-xs font-semibold">Disparate Impact Ratio</p>
       <p className="mt-2 text-xs opacity-80">
-        {legality} — {dir >= 0.8 ? "≥ 0.8 EEOC threshold" : dir >= 0.6 ? "approaching legal limit" : "below 0.8 EEOC threshold"}
+        {legality} — {dir >= 0.8 ? ">= 0.8 EEOC threshold" : dir >= 0.6 ? "approaching legal limit" : "below 0.8 EEOC threshold"}
       </p>
     </div>
   );
@@ -210,7 +210,7 @@ export default function VertexPanel({ result, schema }) {
               onClick={() => { setEvalResult(null); setError(""); }}
               className="text-xs font-medium text-slate-400 hover:text-slate-600 transition"
             >
-              ↺ Re-evaluate
+              Re-evaluate
             </button>
           </motion.div>
         )}
