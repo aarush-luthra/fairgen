@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function Layout({ children }) {
   return (
-    <div className="relative min-h-screen overflow-x-hidden selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="relative min-h-screen selection:bg-emerald-100 selection:text-emerald-900" style={{ overflowX: 'clip' }}>
       {/* Organic Jungle Blobs */}
       <motion.div 
         animate={{ 

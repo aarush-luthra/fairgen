@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import googleCloudLogo from "../assets/google_cloud.webp";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
@@ -7,11 +8,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 function GoogleCloudBadge() {
   return (
     <div className="flex items-center gap-1.5">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#4285F4"/>
-        <path d="M12 4.5C7.86 4.5 4.5 7.86 4.5 12S7.86 19.5 12 19.5 19.5 16.14 19.5 12 16.14 4.5 12 4.5z" fill="white"/>
-        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" fill="#4285F4"/>
-      </svg>
+      <img src={googleCloudLogo} alt="Google Cloud" className="w-4 h-4" />
       <span className="text-[10px] font-semibold text-slate-500 tracking-wide">Powered by Google Cloud</span>
     </div>
   );
@@ -24,8 +21,8 @@ function DirBadge({ dir, label }) {
   const color = isGood
     ? "text-emerald-700 bg-emerald-50 border-emerald-200"
     : isMod
-    ? "text-amber-700 bg-amber-50 border-amber-200"
-    : "text-rose-700 bg-rose-50 border-rose-200";
+      ? "text-amber-700 bg-amber-50 border-amber-200"
+      : "text-rose-700 bg-rose-50 border-rose-200";
   const legality = dir >= 0.8 ? "Compliant" : dir >= 0.6 ? "Borderline" : "Actionable";
 
   return (

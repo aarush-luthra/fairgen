@@ -72,7 +72,7 @@ export default function ConfigPanel({
   const hasRepresentationControls = showGenderSlider || showRaceSlider || showRuralSlider;
 
   return (
-    <section className={CARD + " p-5"}>
+    <section>
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-slate-800">Configuration</h2>
@@ -84,7 +84,7 @@ export default function ConfigPanel({
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-xl bg-white/40 p-4 shadow-[0_2px_12px_rgba(0,100,100,0.14)]">
+        <div className="p-4">
           <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-bold text-slate-700">Dataset size</span>
             <Tooltip text="Choose how many synthetic applicants to generate. Larger datasets take longer but provide stronger analysis and export value." />
