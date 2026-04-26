@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
+import { Download, FileText, Share2 } from "lucide-react";
 
 import { exportToHuggingFace, exportToGoogleSheets } from "../api/export";
 
@@ -13,13 +14,14 @@ function downloadFile(name, contents, type) {
   URL.revokeObjectURL(url);
 }
 
-export default function DownloadPanel({ config, result }) {
+export default function DownloadPanel({ config, result, onDownloadPdf }) {
   const [hfToken, setHfToken] = useState("");
   const [repoName, setRepoName] = useState("");
   const [shareState, setShareState] = useState("");
   const [exportState, setExportState] = useState("");
   const [googleExportState, setGoogleExportState] = useState("");
   const dataset = result?.dataset || [];
+  const hasDataset = dataset.length > 0;
 
   function handleCsv() {
     if (!dataset.length) {
@@ -82,20 +84,28 @@ export default function DownloadPanel({ config, result }) {
   }
 
   return (
-    <section className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-5 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
+    <section className="h-full rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,253,250,0.72))] p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
       <div className="mb-4">
-        <h2 className="text-lg font-bold text-slate-800">Download and Export</h2>
-        <p className="mt-1 text-sm text-slate-500">Export the dataset, share the config, or push to HuggingFace Hub.</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700/60">Export Center</p>
+        <h2 className="mt-2 text-lg font-bold text-slate-800">Download and Export</h2>
+        <p className="mt-1 text-sm text-slate-500">Grab the dataset preview assets, export the fairness report, or publish the generated data.</p>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-3">
-        <button className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onClick={handleCsv}>
+      <div className="grid gap-3 lg:grid-cols-4">
+        <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 disabled:cursor-not-allowed disabled:opacity-50" onClick={handleCsv} disabled={!hasDataset}>
+          <Download size={16} />
           Download CSV
         </button>
-        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={handleJson}>
-          Download Fairness Report
+        <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)] disabled:cursor-not-allowed disabled:opacity-50" onClick={onDownloadPdf} disabled={!result}>
+          <FileText size={16} />
+          Download PDF Report
         </button>
-        <button className="rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)]" onClick={handleShare}>
+        <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)] disabled:cursor-not-allowed disabled:opacity-50" onClick={handleJson} disabled={!result}>
+          <FileText size={16} />
+          Download JSON
+        </button>
+        <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/50 px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-white transition shadow-[0_1px_8px_rgba(0,100,100,0.14)] disabled:cursor-not-allowed disabled:opacity-50" onClick={handleShare} disabled={!result}>
+          <Share2 size={16} />
           Share Config
         </button>
       </div>

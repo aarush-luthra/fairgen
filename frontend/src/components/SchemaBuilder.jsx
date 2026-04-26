@@ -115,7 +115,7 @@ function ColumnPicker({ schema, onToggle, onQuickStart, searchQuery, onSearchCha
   }, [searchQuery, selectedCategory]);
 
   return (
-    <div className="space-y-5 flex flex-col flex-1 min-h-0 px-6">
+    <div className="flex min-h-0 flex-1 flex-col space-y-5">
       {/* Quick Start Section */}
       <div className={CARD + " p-6 flex-shrink-0"}>
         <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Quick Start</p>
@@ -153,7 +153,7 @@ function ColumnPicker({ schema, onToggle, onQuickStart, searchQuery, onSearchCha
       </div>
 
       {/* Column List */}
-      <div className={CARD + " p-6 px-4 flex-1 flex flex-col min-h-0"}>
+      <div className={CARD + " p-6 flex-1 flex flex-col min-h-0"}>
         <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Columns</p>
         <div className="mb-4">
           <input
@@ -164,8 +164,8 @@ function ColumnPicker({ schema, onToggle, onQuickStart, searchQuery, onSearchCha
           />
         </div>
 
-        <div className="flex-1 pr-2 pb-4" style={{ overflowY: 'auto', overflowX: 'visible' }}>
-          <div className="space-y-1 scrollbar-minimal px-4">
+        <div className="flex-1 pr-2 pb-4" style={{ overflowY: "auto", overflowX: "visible" }}>
+          <div className="space-y-1 scrollbar-minimal">
             {filteredColumns.length === 0 ? (
               <p className="py-8 text-center text-sm text-slate-400">No columns match your search.</p>
             ) : (
