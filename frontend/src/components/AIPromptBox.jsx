@@ -5,10 +5,11 @@ export default function AIPromptBox({ onApply, onTestConnection, apiStatus, aiEx
   const [instruction, setInstruction] = useState("");
 
   return (
-    <section className="rounded-2xl bg-gradient-to-br from-white/70 to-blue-50/20 backdrop-blur-sm p-5 shadow-[0_4px_24px_rgba(66,133,244,0.12)]">
+    <section className="rounded-[1.5rem] bg-transparent p-4 shadow-none">
       <div className="mb-4">
-        <h2 className="text-lg font-bold text-slate-800 flex items-center">
-          <img src={geminiLogo} alt="Gemini" className="w-5 h-5 inline-block mr-2" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-blue-600/70">AI Assistant</p>
+        <h2 className="mt-2 flex items-center text-lg font-bold text-slate-800">
+          <img src={geminiLogo} alt="Gemini" className="mr-2 inline-block h-5 w-5" />
           Gemini Constraint Box
         </h2>
         <p className="mt-1 text-sm text-slate-500">

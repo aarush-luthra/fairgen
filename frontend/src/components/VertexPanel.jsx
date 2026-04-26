@@ -109,7 +109,7 @@ export default function VertexPanel({ result, schema }) {
     : null;
 
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-white/70 to-blue-50/30 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(66,133,244,0.15)]">
+    <div className="h-full rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(239,246,255,0.74))] p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
@@ -167,7 +167,7 @@ export default function VertexPanel({ result, schema }) {
             className="space-y-5"
           >
             {/* DIR comparison */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-3 md:grid-cols-2">
               <DirBadge dir={evalResult.before.DIR} label="Before Mitigation" />
               <DirBadge dir={evalResult.after.DIR} label="After Mitigation" />
             </div>
@@ -187,7 +187,7 @@ export default function VertexPanel({ result, schema }) {
             </div>
 
             {/* Approval by group */}
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid gap-5 xl:grid-cols-2">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-2">
                   Before — Model Predictions

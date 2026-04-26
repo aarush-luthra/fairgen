@@ -7,10 +7,10 @@ export default function ScoreHero({ score, scoreTone, onOpenReport }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
-      className="mt-12 grid w-full gap-4 rounded-[2.5rem] bg-gradient-to-br from-white/70 to-emerald-50/40 p-8 text-left shadow-[0_4px_24px_rgba(0,100,100,0.22)] backdrop-blur-xl transition hover:shadow-[0_8px_32px_rgba(0,100,100,0.28)]"
+      className="grid w-full gap-4 rounded-[2.5rem] border border-white/70 bg-[linear-gradient(140deg,rgba(255,255,255,0.92),rgba(240,253,250,0.75),rgba(239,246,255,0.8))] p-8 text-left shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:shadow-[0_22px_70px_rgba(15,23,42,0.1)]"
       onClick={onOpenReport}
     >
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
         <div className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-700/70">Fairness Integrity Score</p>
           <div className="mt-4 flex flex-wrap items-end gap-6">
@@ -31,7 +31,7 @@ export default function ScoreHero({ score, scoreTone, onOpenReport }) {
           </p>
         </div>
 
-        <div className="min-w-[280px] max-w-sm">
+        <div className="rounded-[1.75rem] border border-white/80 bg-white/72 p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
           <div className="mb-3 flex items-center justify-between gap-4 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-900/40">
             <span>Progress toward 100</span>
             <span className="shrink-0">{Math.min(score, 100)}%</span>

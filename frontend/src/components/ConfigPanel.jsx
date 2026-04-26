@@ -48,7 +48,7 @@ function representationEnabled(representation) {
   return representation.femalePct > 0 || representation.minorityPct > 0 || representation.ruralPct > 0;
 }
 
-const CARD = "rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,100,100,0.22)]";
+const CARD = "rounded-[1.5rem] bg-transparent shadow-none";
 
 export default function ConfigPanel({
   config,
@@ -72,10 +72,11 @@ export default function ConfigPanel({
   const hasRepresentationControls = showGenderSlider || showRaceSlider || showRuralSlider;
 
   return (
-    <section>
+    <section className={CARD + " p-4"}>
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Configuration</h2>
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700/60">Control Rail</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-800">Configuration</h2>
           <p className="mt-1 text-sm text-slate-500">Tune the fairness controls, then generate a synthetic credit dataset.</p>
         </div>
         <button className="rounded-lg border border-slate-200/80 bg-white/50 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-white transition" onClick={onEditSchema}>

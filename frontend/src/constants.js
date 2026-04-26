@@ -23,6 +23,7 @@ export const FAIRNESS_BADGES = [
 ];
 
 export const TABS = [
+  { id: "overview", label: "Overview" },
   { id: "table", label: "Data Table" },
   { id: "charts", label: "Distribution Charts" },
   { id: "report", label: "Fairness Report" },

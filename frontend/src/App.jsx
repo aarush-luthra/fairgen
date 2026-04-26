@@ -9,6 +9,7 @@ import DataTable from "./components/DataTable";
 import DistributionCharts from "./components/DistributionCharts";
 import DownloadPanel from "./components/DownloadPanel";
 import FairnessReport from "./components/FairnessReport";
+import ResultsOverview from "./components/ResultsOverview";
 import SchemaBuilder from "./components/SchemaBuilder";
 import ScoreHero from "./components/ScoreHero";
 import Layout from "./components/Layout";
@@ -21,6 +22,7 @@ import { MotionWrapper, StaggerWrapper } from "./components/MotionWrapper";
 import { generateDataset } from "./api/generate";
 import { applyAIConstraint, suggestColumns, testApiConnection } from "./api/openai";
 import { DEFAULT_CONFIG, DEFAULT_SCHEMA, DEMO_SCHEMA, FAIRNESS_BADGES, TABS, buildSchemaColumn } from "./constants";
+import { downloadFairnessPdf } from "./utils/pdfExport";
 
 const GENERATION_STEPS = [
   "Fitting SDV synthesizer...",
@@ -114,7 +116,7 @@ export default function App() {
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [step, setStep] = useState("schema");
-  const [activeTab, setActiveTab] = useState("table");
+  const [activeTab, setActiveTab] = useState("overview");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Build a schema to get started");
@@ -185,6 +187,7 @@ export default function App() {
       setConfig(nextConfig);
       setSchema(nextSchema);
       setResult(response);
+      setActiveTab("overview");
       setLastGeneratedConfig(nextConfig);
       setLastGeneratedSchema(nextSchema);
       setStatusMessage("Dataset ready. Check your Fairness Report.");
@@ -418,9 +421,10 @@ export default function App() {
 
   const tabs = useMemo(
     () => ({
+      overview: <ResultsOverview result={result} onOpenTab={setActiveTab} onDownloadPdf={() => downloadFairnessPdf(result)} />,
       table: <DataTable rows={result?.dataset || []} schema={schema} />,
       charts: <DistributionCharts charts={result?.charts} />,
-      report: <FairnessReport metrics={result?.metrics} fairnessReport={result?.fairnessReport} beforeMetrics={result?.beforeMetrics} geminiNarrative={result?.geminiNarrative} />,
+      report: <FairnessReport metrics={result?.metrics} beforeMetrics={result?.beforeMetrics} geminiNarrative={result?.geminiNarrative} />,
     }),
     [result, schema],
   );
@@ -499,10 +503,10 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.4 }}
-                className="grid gap-8 lg:grid-cols-[340px_minmax(0,1fr)] xl:grid-cols-[380px_minmax(0,1fr)]"
+                className="grid items-start gap-8 xl:grid-cols-[360px_minmax(0,1fr)]"
               >
-                <div className="space-y-8">
-                  <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
+                <div className="space-y-6 xl:sticky xl:top-28">
+                  <div className="rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.88),rgba(240,253,250,0.72))] p-4 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
                     <ConfigPanel
                       config={config}
                       schema={schema}
@@ -517,15 +521,17 @@ export default function App() {
                       showGenerateSuccess={showGenerateSuccess}
                     />
                   </div>
-                  <AIPromptBox
-                    apiStatus={apiStatus}
-                    aiExplanation={aiExplanation}
-                    onApply={handleApplyAIConstraint}
-                    onTestConnection={handleApiTest}
-                  />
+                  <div className="rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.86),rgba(239,246,255,0.75))] p-4 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+                    <AIPromptBox
+                      apiStatus={apiStatus}
+                      aiExplanation={aiExplanation}
+                      onApply={handleApplyAIConstraint}
+                      onTestConnection={handleApiTest}
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-12">
+                <div className="space-y-8">
                   <AnimatePresence mode="wait">
                     {result && (
                       <ScoreHero 
@@ -537,15 +543,15 @@ export default function App() {
                     )}
                   </AnimatePresence>
 
-                  <div className="rounded-2xl bg-gradient-to-br from-white/70 to-emerald-50/40 backdrop-blur-sm p-6 shadow-[0_4px_24px_rgba(0,100,100,0.22)]">
-                    <div className="mb-6 grid gap-3 grid-cols-1 sm:grid-cols-3">
+                  <div className="rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,253,250,0.72))] p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+                    <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       {TABS.map((tab, index) => {
                         const active = activeTab === tab.id;
                         return (
                           <button
                             key={tab.id}
-                            className={`flex items-center justify-between rounded-xl px-5 py-4 text-left transition active:scale-95 ${
-                              active ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/50 text-slate-500 hover:bg-white/70 shadow-[0_1px_8px_rgba(0,100,100,0.14)]"
+                            className={`flex min-h-[92px] items-center justify-between rounded-2xl px-5 py-4 text-left transition active:scale-95 ${
+                              active ? "bg-slate-900 text-white shadow-[0_14px_30px_rgba(15,23,42,0.18)]" : "bg-white/80 text-slate-500 hover:bg-white shadow-[0_6px_18px_rgba(15,23,42,0.08)]"
                             }`}
                             onClick={() => setActiveTab(tab.id)}
                           >
@@ -574,9 +580,10 @@ export default function App() {
                     </div>
                   </div>
 
-                  <DownloadPanel config={{ ...config, schema }} result={result} />
-
-                  <VertexPanel result={result} schema={schema} />
+                  <div className="grid gap-8 2xl:grid-cols-[0.92fr_1.08fr]">
+                    <DownloadPanel config={{ ...config, schema }} result={result} onDownloadPdf={() => downloadFairnessPdf(result)} />
+                    <VertexPanel result={result} schema={schema} />
+                  </div>
                 </div>
               </motion.div>
             )}
