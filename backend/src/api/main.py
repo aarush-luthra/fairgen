@@ -9,12 +9,12 @@ from fastapi.responses import JSONResponse
 
 load_dotenv()
 
-from firestore_client import list_sessions, load_session
-from gemini_client import interpret_fairness_prompt, suggest_schema_columns, test_connection
-from generator import SDV_AVAILABLE, SDV_VERSION
-from pipeline import run_pipeline, serialize_result
-from vertex_trainer import evaluate_model_fairness
-from schemas import (
+from src.adapters.firestore_client import list_sessions, load_session
+from src.adapters.gemini_client import interpret_fairness_prompt, suggest_schema_columns, test_connection
+from src.domain.generator import SDV_AVAILABLE, SDV_VERSION
+from src.core.pipeline import run_pipeline, serialize_result
+from src.scripts.vertex_trainer import evaluate_model_fairness
+from src.api.schemas import (
     ExportGoogleSheetsRequest,
     ExportHuggingFaceRequest,
     GenerateRequest,
@@ -94,8 +94,8 @@ def health():
 
 @app.post("/generate")
 def generate(payload: GenerateRequest):
-    _validate_schema(payload.schema)
-    result = run_pipeline(payload.schema, payload.config)
+    _validate_schema(payload.columns)
+    result = run_pipeline(payload.columns, payload.config)
     return serialize_result(result)
 
 
@@ -124,7 +124,7 @@ def model_evaluate(payload: ModelEvalRequest):
         return evaluate_model_fairness(
             before_df_records=payload.beforeDataset,
             after_df_records=payload.dataset,
-            schema=payload.schema,
+            schema=payload.columns,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Model evaluation failed: {exc}") from exc

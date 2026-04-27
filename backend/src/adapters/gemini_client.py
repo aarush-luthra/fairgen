@@ -21,7 +21,7 @@ try:
 except ImportError:
     _VERTEXAI_AVAILABLE = False
 
-from schemas import DeBiasConfig
+from src.api.schemas import DeBiasConfig
 
 _MODEL_NAME = "gemini-1.5-flash"
 

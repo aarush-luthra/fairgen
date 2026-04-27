@@ -28,14 +28,14 @@ from typing import Any, Protocol, runtime_checkable
 
 import pandas as pd
 
-from bias_layers import apply_bias_pipeline, create_biased_baseline
-from fairness import (
+from src.domain.bias_layers import apply_bias_pipeline, create_biased_baseline
+from src.core.fairness import (
     build_distribution_summary,
     build_metric_cards,
     compute_fairness_metrics,
     monitored_columns,
 )
-from generator import GenerationArtifacts, SDV_VERSION, sample_base_dataset
+from src.domain.generator import GenerationArtifacts, SDV_VERSION, sample_base_dataset
 
 # Re-export so tests only need to import from pipeline
 __all__ = [
@@ -47,7 +47,7 @@ __all__ = [
     "run_pipeline",
     "serialize_result",
 ]
-from schemas import DeBiasConfig, SchemaColumn
+from src.api.schemas import DeBiasConfig, SchemaColumn
 
 
 # ---------------------------------------------------------------------------
@@ -158,7 +158,7 @@ class GeminiNarrativeAdapter:
         dataset_size: int,
     ) -> str | None:
         try:
-            from gemini_client import generate_fairness_narrative
+            from src.adapters.gemini_client import generate_fairness_narrative
             return generate_fairness_narrative(
                 before_metrics=before_metrics,
                 after_metrics=after_metrics,
@@ -175,7 +175,7 @@ class FirestoreSessionAdapter:
 
     def save(self, result: GenerationResult, schema: list[dict], config: dict) -> str:
         try:
-            from firestore_client import save_session
+            from src.adapters.firestore_client import save_session
             return save_session(
                 {
                     "metrics": result.after_metrics,

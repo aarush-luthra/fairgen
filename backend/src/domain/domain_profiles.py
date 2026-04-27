@@ -1,44 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from math import exp, log
-
 import numpy as np
 import pandas as pd
 
-from schema_catalog import CATEGORICAL_DEFAULTS
-from schemas import ColumnConfig, DeBiasConfig, SchemaColumn
-
-try:
-    from sdv.metadata import SingleTableMetadata
-    from sdv.single_table import GaussianCopulaSynthesizer
-
-    SDV_AVAILABLE = True
-except Exception:
-    SingleTableMetadata = None
-    GaussianCopulaSynthesizer = None
-    SDV_AVAILABLE = False
-
-
-SDV_VERSION = "unavailable"
-if SDV_AVAILABLE:
-    try:
-        import sdv
-
-        SDV_VERSION = sdv.__version__
-    except Exception:
-        SDV_VERSION = "installed"
-
+from src.core.schema_catalog import CATEGORICAL_DEFAULTS
+from src.api.schemas import ColumnConfig, SchemaColumn
 
 EMPLOYMENT = ["Employed", "Self-employed", "Unemployed", "Retired"]
 PURPOSES = ["Home", "Auto", "Education", "Business", "Personal"]
-
-
-@dataclass
-class GenerationArtifacts:
-    base_dataset: pd.DataFrame
-    source: str
-
 
 def _normalize_weights(weights: list[float], size: int) -> np.ndarray:
     if len(weights) != size or sum(weights) <= 0:
@@ -47,18 +17,15 @@ def _normalize_weights(weights: list[float], size: int) -> np.ndarray:
     total = values.sum()
     return values / total if total > 0 else np.repeat(1 / size, size)
 
-
-def _categorical_options(column: SchemaColumn) -> tuple[list[str], np.ndarray]:
+def categorical_options(column: SchemaColumn) -> tuple[list[str], np.ndarray]:
     options = column.config.options or CATEGORICAL_DEFAULTS.get(column.name, ["Yes", "No"])
     weights = _normalize_weights(column.config.weights, len(options))
     return options, weights
-
 
 def _safe_nullable(value, column: SchemaColumn, rng: np.random.Generator):
     if column.config.nullable and rng.random() < 0.05:
         return None
     return value
-
 
 def _sample_generic_numerical(config: ColumnConfig, rng: np.random.Generator) -> float:
     lower = config.min if config.min is not None else 0
@@ -74,7 +41,6 @@ def _sample_generic_numerical(config: ColumnConfig, rng: np.random.Generator) ->
         value = rng.uniform(lower, upper)
     return float(np.clip(value, lower, upper))
 
-
 def _employment_for_age(age: int, rng: np.random.Generator) -> str:
     if age > 63 and rng.random() < 0.45:
         return "Retired"
@@ -82,12 +48,10 @@ def _employment_for_age(age: int, rng: np.random.Generator) -> str:
         return "Unemployed"
     return rng.choice(EMPLOYMENT, p=[0.62, 0.18, 0.12, 0.08])
 
-
 def _purpose_for_income(income: float, rng: np.random.Generator) -> str:
     if income > 120_000:
         return rng.choice(PURPOSES, p=[0.35, 0.15, 0.08, 0.22, 0.20])
     return rng.choice(PURPOSES, p=[0.20, 0.26, 0.16, 0.10, 0.28])
-
 
 def _compute_internal_approval_score(row: dict[str, object], schema: list[SchemaColumn]) -> float:
     signal_specs: list[tuple[str, float, callable]] = []
@@ -116,7 +80,6 @@ def _compute_internal_approval_score(row: dict[str, object], schema: list[Schema
     for name, weight, transform in present:
         score += transform(row[name]) * (weight / total_weight)
     return float(np.clip(score, 0, 1))
-
 
 def _latent_profile(rng: np.random.Generator) -> dict[str, object]:
     age = int(rng.integers(21, 72))
@@ -189,13 +152,12 @@ def _latent_profile(rng: np.random.Generator) -> dict[str, object]:
         "co_applicant": co_applicant,
     }
 
-
 def _value_for_column(column: SchemaColumn, latent: dict[str, object], rng: np.random.Generator):
     if column.name in latent:
         return _safe_nullable(latent[column.name], column, rng)
 
     if column.type == "categorical":
-        options, weights = _categorical_options(column)
+        options, weights = categorical_options(column)
         return _safe_nullable(str(rng.choice(options, p=weights)), column, rng)
     if column.type == "boolean":
         base_rate = column.config.base_rate if column.config.base_rate is not None else 0.5
@@ -205,7 +167,6 @@ def _value_for_column(column: SchemaColumn, latent: dict[str, object], rng: np.r
     if column.config.max is not None and column.config.max <= 10 and float(value).is_integer():
         value = int(round(value))
     return _safe_nullable(round(float(value), 4), column, rng)
-
 
 def create_seed_dataframe(schema: list[SchemaColumn], rows: int = 120) -> pd.DataFrame:
     rng = np.random.default_rng(42)
@@ -222,73 +183,3 @@ def create_seed_dataframe(schema: list[SchemaColumn], rows: int = 120) -> pd.Dat
         data.append(row)
 
     return pd.DataFrame(data)
-
-
-def create_metadata(schema: list[SchemaColumn]):
-    if not SDV_AVAILABLE or SingleTableMetadata is None:
-        return None
-
-    metadata = SingleTableMetadata()
-    seed_df = create_seed_dataframe(schema).drop(columns=["approval_score"], errors="ignore")
-    metadata.detect_from_dataframe(data=seed_df)
-    return metadata
-
-
-def _perturb_numeric(series: pd.Series, column: SchemaColumn, rng: np.random.Generator) -> pd.Series:
-    numeric_series = pd.to_numeric(series, errors="coerce").dropna()
-    lower = float(column.config.min) if column.config.min is not None else (float(numeric_series.min()) if not numeric_series.empty else 0.0)
-    upper = float(column.config.max) if column.config.max is not None else (float(numeric_series.max()) if not numeric_series.empty else 100.0)
-    
-    if np.isnan(lower): lower = 0.0
-    if np.isnan(upper): upper = 100.0
-    if lower >= upper: upper = lower + 1.0
-    
-    spread = max((upper - lower) * 0.05, 0.1)
-    
-    # Fill NaNs before perturbing to avoid errors
-    filled_series = series.fillna((lower + upper) / 2).astype(float)
-    
-    perturbed = np.clip(filled_series + rng.normal(0, spread, len(series)), lower, upper)
-    
-    if pd.api.types.is_integer_dtype(series):
-        return perturbed.round().astype(int)
-    return perturbed.round(4)
-
-
-def _fallback_sample(seed_df: pd.DataFrame, schema: list[SchemaColumn], size: int) -> pd.DataFrame:
-    rng = np.random.default_rng(7)
-    sampled = seed_df.sample(n=size, replace=True, random_state=7).reset_index(drop=True).copy()
-
-    for column in schema:
-        if column.name == "loan_approved":
-            continue
-        if column.type == "numerical" and column.name in sampled:
-            sampled[column.name] = _perturb_numeric(sampled[column.name], column, rng)
-        elif column.type == "categorical" and column.name in sampled and rng.random() < 0.15:
-            options, weights = _categorical_options(column)
-            replacement_mask = rng.random(len(sampled)) < 0.08
-            sampled.loc[replacement_mask, column.name] = rng.choice(options, size=int(replacement_mask.sum()), p=weights)
-        elif column.type == "boolean" and column.name in sampled and column.name != "loan_approved":
-            base_rate = column.config.base_rate if column.config.base_rate is not None else float(sampled[column.name].mean())
-            sampled[column.name] = rng.random(len(sampled)) < base_rate
-
-    return sampled
-
-
-def sample_base_dataset(config: DeBiasConfig, schema: list[SchemaColumn]) -> GenerationArtifacts:
-    seed_df = create_seed_dataframe(schema)
-    fit_df = seed_df.drop(columns=["approval_score"], errors="ignore")
-
-    if SDV_AVAILABLE and GaussianCopulaSynthesizer is not None:
-        try:
-            metadata = create_metadata(schema)
-            synthesizer = GaussianCopulaSynthesizer(metadata)
-            synthesizer.fit(fit_df)
-            sampled = synthesizer.sample(num_rows=config.datasetSize)
-            sampled["approval_score"] = 0.5
-            return GenerationArtifacts(base_dataset=sampled, source="sdv")
-        except Exception:
-            pass
-
-    sampled = _fallback_sample(seed_df, schema, config.datasetSize)
-    return GenerationArtifacts(base_dataset=sampled, source="seed-fallback")

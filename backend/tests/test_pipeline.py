@@ -11,8 +11,8 @@ from __future__ import annotations
 import pytest
 import pandas as pd
 
-from schemas import DeBiasConfig, SchemaColumn, ColumnConfig, RepresentationConfig
-from pipeline import (
+from src.api.schemas import DeBiasConfig, SchemaColumn, ColumnConfig, RepresentationConfig
+from src.core.pipeline import (
     GenerationResult,
     DataSynthesisPort,
     NarrativePort,

@@ -6,7 +6,7 @@ from typing import Any
 
 from openai import OpenAI
 
-from schemas import DeBiasConfig
+from src.api.schemas import DeBiasConfig
 
 
 SYSTEM_PROMPT = """You are a fairness constraint interpreter for de.bias, a synthetic

@@ -17,7 +17,7 @@ Local dev: run `gcloud auth application-default login` first.
 
 Usage
 -----
-    from firestore_client import save_session, load_session, list_sessions
+    from src.adapters.firestore_client import save_session, load_session, list_sessions
 
     session_id = save_session(result_payload, schema, config)
     session    = load_session(session_id)

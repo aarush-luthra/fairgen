@@ -21,7 +21,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-from schemas import SchemaColumn
+from src.api.schemas import SchemaColumn
 
 
 # ---------------------------------------------------------------------------

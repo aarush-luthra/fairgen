@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class RepresentationConfig(BaseModel):
@@ -62,7 +62,9 @@ class SchemaColumn(BaseModel):
 
 
 class GenerateRequest(BaseModel):
-    schema: list[SchemaColumn] = Field(default_factory=list)
+    model_config = ConfigDict(populate_by_name=True)
+
+    columns: list[SchemaColumn] = Field(default_factory=list, alias="schema")
     config: DeBiasConfig = Field(default_factory=DeBiasConfig)
 
 
@@ -101,9 +103,11 @@ class ExportGoogleSheetsRequest(BaseModel):
 
 class ModelEvalRequest(BaseModel):
     """Request body for POST /model/evaluate."""
+    model_config = ConfigDict(populate_by_name=True)
+
     dataset: list[dict[str, Any]]        # after-mitigation records
     beforeDataset: list[dict[str, Any]]  # biased baseline records
-    schema: list[SchemaColumn]
+    columns: list[SchemaColumn] = Field(alias="schema")
 
 
 class APIConnectionStatus(BaseModel):

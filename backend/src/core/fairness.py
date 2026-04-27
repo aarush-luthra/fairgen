@@ -4,8 +4,8 @@ import math
 
 import pandas as pd
 
-from schema_catalog import AGE_BUCKETS
-from schemas import SchemaColumn
+from src.core.schema_catalog import AGE_BUCKETS
+from src.api.schemas import SchemaColumn
 
 
 METRIC_TOOLTIPS = {
